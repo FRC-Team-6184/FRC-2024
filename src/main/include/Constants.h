@@ -47,15 +47,15 @@ constexpr double kRearLeftChassisAngularOffset = std::numbers::pi;
 constexpr double kRearRightChassisAngularOffset = std::numbers::pi / 2;
 
 // SPARK MAX CAN IDs
-constexpr int kFrontLeftDrivingCanId = 11;
-constexpr int kRearLeftDrivingCanId = 13;
-constexpr int kFrontRightDrivingCanId = 15;
-constexpr int kRearRightDrivingCanId = 17;
+constexpr int kFrontLeftDrivingCanId = 1;
+constexpr int kFrontLeftTurningCanId = 2;
+constexpr int kFrontRightDrivingCanId = 3;
+constexpr int kFrontRightTurningCanId = 4;
+constexpr int kRearRightDrivingCanId = 5;
+constexpr int kRearRightTurningCanId = 6;
+constexpr int kRearLeftDrivingCanId = 7;
+constexpr int kRearLeftTurningCanId = 8;
 
-constexpr int kFrontLeftTurningCanId = 10;
-constexpr int kRearLeftTurningCanId = 12;
-constexpr int kFrontRightTurningCanId = 14;
-constexpr int kRearRightTurningCanId = 16;
 }  // namespace DriveConstants
 
 namespace ModuleConstants {
@@ -117,8 +117,8 @@ constexpr rev::CANSparkMax::IdleMode kDrivingMotorIdleMode =
 constexpr rev::CANSparkMax::IdleMode kTurningMotorIdleMode =
     rev::CANSparkMax::IdleMode::kBrake;
 
-constexpr units::ampere_t kDrivingMotorCurrentLimit = 50_A;
-constexpr units::ampere_t kTurningMotorCurrentLimit = 20_A;
+constexpr units::ampere_t kDrivingMotorCurrentLimit = 40_A;
+constexpr units::ampere_t kTurningMotorCurrentLimit = 30_A;
 }  // namespace ModuleConstants
 
 namespace AutoConstants {
