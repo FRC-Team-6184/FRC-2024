@@ -139,3 +139,8 @@ namespace OIConstants {
 constexpr int kDriverControllerPort = 0;
 constexpr double kDriveDeadband = 0.05;
 }  // namespace OIConstants
+
+
+constexpr double TURTLE_SPEED = 0.5;
+constexpr double NORMAL_SPEED = .75;
+constexpr double TURBO_SPEED = 1.0;
