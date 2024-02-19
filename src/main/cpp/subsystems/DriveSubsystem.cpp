@@ -128,13 +128,13 @@ void DriveSubsystem::Drive(units::meters_per_second_t xSpeed,
 
 void DriveSubsystem::SetX() {
   m_frontLeft.SetDesiredState(
-      frc::SwerveModuleState{0_mps, frc::Rotation2d{45_deg}});
+      frc::SwerveModuleState{0_mps, frc::Rotation2d{-45_deg}});
   m_frontRight.SetDesiredState(
-      frc::SwerveModuleState{0_mps, frc::Rotation2d{-45_deg}});
-  m_rearLeft.SetDesiredState(
-      frc::SwerveModuleState{0_mps, frc::Rotation2d{-45_deg}});
-  m_rearRight.SetDesiredState(
       frc::SwerveModuleState{0_mps, frc::Rotation2d{45_deg}});
+  m_rearLeft.SetDesiredState(
+      frc::SwerveModuleState{0_mps, frc::Rotation2d{45_deg}});
+  m_rearRight.SetDesiredState(
+      frc::SwerveModuleState{0_mps, frc::Rotation2d{-45_deg}});
 }
 
 void DriveSubsystem::SetModuleStates(
