@@ -34,15 +34,15 @@ RobotContainer::RobotContainer() {
   // Turning is controlled by the X axis of the right stick.
   driveSubsystem.SetDefaultCommand(frc2::RunCommand(
       [this] {
-        double speedMultiplier = NORMAL_SPEED;
+        double speedMultiplier = speedMode::NORMAL_SPEED;
         if (driverController.GetLeftBumper() && driverController.GetRightBumper()) {
-            speedMultiplier = LUDICROUS_SPEED;
+            speedMultiplier = speedMode::LUDICROUS_SPEED;
         }
         else if (driverController.GetLeftBumper()) {
-            speedMultiplier = TURBO_SPEED;
+            speedMultiplier = speedMode::TURBO_SPEED;
         }
         else if (driverController.GetRightBumper()) {
-            speedMultiplier = TURTLE_SPEED;
+            speedMultiplier = speedMode::TURTLE_SPEED;
         }
         driveSubsystem.Drive(
           -units::meters_per_second_t{
