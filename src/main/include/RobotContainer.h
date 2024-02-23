@@ -17,6 +17,10 @@
 #include "Constants.h"
 #include "subsystems/DriveSubsystem.h"
 
+using frc::SendableChooser;
+using frc::XboxController;
+using frc2::Command;
+
 /**
  * This class is where the bulk of the robot should be declared.  Since
  * Command-based is a "declarative" paradigm, very little robot logic should
@@ -28,19 +32,22 @@ class RobotContainer {
  public:
   RobotContainer();
 
-  frc2::Command* GetAutonomousCommand();
+  Command* GetAutonomousCommand(std::string autoMode);
 
  private:
   // The driver's controller
-  frc::XboxController m_driverController{OIConstants::kDriverControllerPort};
+  XboxController driverController{OIConstants::driverControllerPort};
 
   // The robot's subsystems and commands are defined here...
 
   // The robot's subsystems
-  DriveSubsystem m_drive;
-
-  // The chooser for the autonomous routines
-  frc::SendableChooser<frc2::Command*> m_chooser;
+  DriveSubsystem driveSubsystem;
 
   void ConfigureButtonBindings();
+
+  void leftAutoMode(bool orientation = false);
+
+  void middleAutoMode();
+
+  void rightAutoMode();
 };

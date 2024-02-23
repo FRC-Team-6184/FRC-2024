@@ -7,7 +7,12 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/CommandScheduler.h>
 
-void Robot::RobotInit() {}
+void Robot::RobotInit() {
+  autoChooser.SetDefaultOption(leftAuto, leftAuto);
+  autoChooser.AddOption(middleAuto, middleAuto);
+  autoChooser.AddOption(rightAuto, rightAuto);
+  frc::SmartDashboard::PutData("Auto Modes", &autoChooser);
+}
 
 /**
  * This function is called every 20 ms, no matter the mode. Use
@@ -17,7 +22,9 @@ void Robot::RobotInit() {}
  * <p> This runs after the mode specific periodic functions, but before
  * LiveWindow and SmartDashboard integrated updating.
  */
-void Robot::RobotPeriodic() { frc2::CommandScheduler::GetInstance().Run(); }
+void Robot::RobotPeriodic() {
+  frc2::CommandScheduler::GetInstance().Run();
+}
 
 /**
  * This function is called once each time the robot enters Disabled mode. You
@@ -33,10 +40,15 @@ void Robot::DisabledPeriodic() {}
  * RobotContainer} class.
  */
 void Robot::AutonomousInit() {
-  m_autonomousCommand = m_container.GetAutonomousCommand();
+  int multiplier = 1;
+  std::string selection = autoChooser.GetSelected();
+  if (autoChooser.GetSelected() == leftAuto) {
+    multiplier = -1;
+  }
+  autonomousCommand = container.GetAutonomousCommand(autoChooser.GetSelected());
 
-  if (m_autonomousCommand != nullptr) {
-    m_autonomousCommand->Schedule();
+  if (autonomousCommand != nullptr) {
+    autonomousCommand->Schedule();
   }
 }
 
@@ -47,9 +59,9 @@ void Robot::TeleopInit() {
   // teleop starts running. If you want the autonomous to
   // continue until interrupted by another command, remove
   // this line or comment it out.
-  if (m_autonomousCommand != nullptr) {
-    m_autonomousCommand->Cancel();
-    m_autonomousCommand = nullptr;
+  if (autonomousCommand != nullptr) {
+    autonomousCommand->Cancel();
+    autonomousCommand = nullptr;
   }
 }
 
@@ -64,5 +76,7 @@ void Robot::TeleopPeriodic() {}
 void Robot::TestPeriodic() {}
 
 #ifndef RUNNING_FRC_TESTS
-int main() { return frc::StartRobot<Robot>(); }
+int main() {
+  return frc::StartRobot<Robot>();
+}
 #endif
