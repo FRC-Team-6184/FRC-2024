@@ -114,7 +114,7 @@ frc2::Command* RobotContainer::GetAutonomousCommand(std::string autoMode) {
     AutoConstants::kPThetaController,
     0,
     0,
-    AutoConstants::thetaControllerConstraints
+    AutoConstants::kThetaControllerConstraints
   };
 
   thetaController.EnableContinuousInput(units::radian_t{-std::numbers::pi}, units::radian_t{std::numbers::pi});
@@ -140,7 +140,9 @@ frc2::Command* RobotContainer::GetAutonomousCommand(std::string autoMode) {
   return new frc2::SequentialCommandGroup(
     std::move(swerveControllerCommand),
     frc2::InstantCommand(
-      [this]() { driveSubsystem.Drive(0_mps, 0_mps, 0_rad_per_s, false, false); },
-      {})
-    );
+      [this]() {
+        driveSubsystem.Drive(0_mps, 0_mps, 0_rad_per_s, false, false);
+      }, {}
+    )
+  );
 }

@@ -131,14 +131,13 @@ constexpr double kPXController = 0.5;
 constexpr double kPYController = 0.5;
 constexpr double kPThetaController = 0.5;
 
-extern const frc::TrapezoidProfile<units::radians>::Constraints
-    kThetaControllerConstraints;
+extern const frc::TrapezoidProfile<units::radians>::Constraints kThetaControllerConstraints;
 }  // namespace AutoConstants
 
 namespace OIConstants {
-constexpr int kDriverControllerPort = 0;
-constexpr double kDriveDeadband = 0.05;
-}  // namespace OIConstants
+    constexpr int driverControllerPort = 0;
+    constexpr double driveDeadband = 0.05;
+}
 
 
 constexpr double TURTLE_SPEED = 0.25;
