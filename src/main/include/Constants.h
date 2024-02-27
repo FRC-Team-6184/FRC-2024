@@ -13,6 +13,9 @@
 
 #include <numbers>
 
+using frc::TrapezoidProfile;
+using units::radians;
+
 #pragma once
 
 /**
@@ -53,6 +56,13 @@ namespace DriveConstants {
   constexpr int kRearRightDrivingCanId = 6;
   constexpr int kFrontRightTurningCanId = 7;
   constexpr int kFrontRightDrivingCanId = 8;
+}
+
+namespace ShooterConstants {
+  constexpr int shooter1CanId = 9;
+  constexpr int shooter2CanId = 10;
+
+  constexpr int shooterControllerPort = 1;
 }
 
 namespace ModuleConstants {
@@ -116,7 +126,7 @@ namespace AutoConstants {
   constexpr double kPYController = 0.5;
   constexpr double kPThetaController = 0.5;
 
-  extern const frc::TrapezoidProfile<units::radians>::Constraints kThetaControllerConstraints;
+  extern const TrapezoidProfile<radians>::Constraints kThetaControllerConstraints;
 }
 
 namespace OIConstants {

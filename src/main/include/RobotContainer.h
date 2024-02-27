@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <frc/PS5Controller.h>
 #include <frc/XboxController.h>
 #include <frc/controller/PIDController.h>
 #include <frc/controller/ProfiledPIDController.h>
@@ -18,6 +19,7 @@
 #include "subsystems/DriveSubsystem.h"
 
 using frc::SendableChooser;
+using frc::PS5Controller;
 using frc::XboxController;
 using frc2::Command;
 

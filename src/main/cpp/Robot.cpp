@@ -7,6 +7,7 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/CommandScheduler.h>
 
+
 void Robot::RobotInit() {
   autoChooser.SetDefaultOption(leftAuto, leftAuto);
   autoChooser.AddOption(middleAuto, middleAuto);
@@ -63,12 +64,24 @@ void Robot::TeleopInit() {
     autonomousCommand->Cancel();
     autonomousCommand = nullptr;
   }
+  shooterOn = false;
 }
 
 /**
  * This function is called periodically during operator control.
  */
-void Robot::TeleopPeriodic() {}
+void Robot::TeleopPeriodic() {
+  shooter2.SetControl(Follower{shooter1.GetDeviceID(), false});
+  if (shooterController.GetCircleButtonPressed()) {
+    shooterOn = !shooterOn;
+  }
+  if (shooterOn) {
+    shooter1.Set(-1);
+  }
+  else {
+    shooter1.Set(0);
+  }
+}
 
 /**
  * This function is called periodically during test mode.

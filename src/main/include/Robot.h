@@ -8,10 +8,21 @@
 #include <frc2/command/Command.h>
 #include <frc/smartdashboard/SendableChooser.h>
 
-#include "RobotContainer.h"
+#include <ctre/phoenix6/TalonFX.hpp>
+#include "frc/PS5Controller.h"
 
+#include "RobotContainer.h"
+#include "Constants.h"
+
+using ctre::phoenix6::hardware::TalonFX;
+using ctre::phoenix6::controls::Follower;
 class Robot : public frc::TimedRobot {
  public:
+  TalonFX shooter1{ShooterConstants::shooter1CanId};
+  TalonFX shooter2{ShooterConstants::shooter2CanId};
+
+  PS5Controller shooterController{ShooterConstants::shooterControllerPort};
+
   void RobotInit() override;
   void RobotPeriodic() override;
   void DisabledInit() override;
@@ -21,6 +32,8 @@ class Robot : public frc::TimedRobot {
   void TeleopInit() override;
   void TeleopPeriodic() override;
   void TestPeriodic() override;
+
+  bool shooterOn;
 
  private:
   // Have it null by default so that if testing teleop it
@@ -34,5 +47,7 @@ class Robot : public frc::TimedRobot {
   const std::string middleAuto = "Middle";
   const std::string rightAuto = "Right";
   std::string selectedAuto;
+
+
 
 };
