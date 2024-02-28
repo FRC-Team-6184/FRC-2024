@@ -22,11 +22,26 @@
 
 using namespace DriveConstants;
 using frc::ApplyDeadband;
+using frc::PIDController;
 using frc::Pose2d;
+using frc::ProfiledPIDController;
 using frc::TrajectoryConfig;
 using frc::TrajectoryGenerator;
 using frc::Translation2d;
 using frc::XboxController;
+using frc2::Command;
+using frc2::InstantCommand;
+using frc2::JoystickButton;
+using frc2::RunCommand;
+using frc2::SequentialCommandGroup;
+using frc2::SwerveControllerCommand;
+using std::move;
+using std::numbers::pi;
+using std::string;
+using units::meters_per_second_t;
+using units::radian_t;
+using units::radians;
+using units::radians_per_second_t;
 
 RobotContainer::RobotContainer() {
   // Initialize all of your commands and subsystems here
@@ -37,7 +52,7 @@ RobotContainer::RobotContainer() {
   // Set up default drive command
   // The left stick controls translation of the robot.
   // Turning is controlled by the X axis of the right stick.
-  driveSubsystem.SetDefaultCommand(frc2::RunCommand(
+  driveSubsystem.SetDefaultCommand(RunCommand(
       [this] {
         double speedMultiplier = speedMode::NORMAL_SPEED;
         if (driverController.GetLeftBumper() && driverController.GetRightBumper()) {
@@ -50,13 +65,13 @@ RobotContainer::RobotContainer() {
             speedMultiplier = speedMode::TURTLE_SPEED;
         }
         driveSubsystem.Drive(
-          -units::meters_per_second_t{
+          -meters_per_second_t{
             ApplyDeadband(driverController.GetLeftY() * speedMultiplier, OIConstants::driveDeadband)
           },
-          -units::meters_per_second_t{
+          -meters_per_second_t{
             ApplyDeadband(driverController.GetLeftX() * speedMultiplier, OIConstants::driveDeadband)
           },
-          -units::radians_per_second_t{
+          -radians_per_second_t{
             ApplyDeadband(driverController.GetRightX() * speedMultiplier, OIConstants::driveDeadband)
           },
           true,
@@ -69,8 +84,8 @@ RobotContainer::RobotContainer() {
 }
 
 void RobotContainer::ConfigureButtonBindings() {
-  frc2::JoystickButton(&driverController, XboxController::Button::kRightBumper)
-    .WhileTrue(new frc2::RunCommand([this] { driveSubsystem.SetX(); }, {&driveSubsystem}));
+  JoystickButton(&driverController, XboxController::Button::kRightBumper)
+    .WhileTrue(new RunCommand([this] { driveSubsystem.SetX(); }, {&driveSubsystem}));
 }
 
 void RobotContainer::leftAutoMode(bool orientation) {
@@ -86,7 +101,7 @@ void RobotContainer::rightAutoMode() {
   leftAutoMode(true);
 }
 
-frc2::Command* RobotContainer::GetAutonomousCommand(std::string autoMode) {
+Command* RobotContainer::GetAutonomousCommand(string autoMode) {
   // Set up config for trajectory
   TrajectoryConfig config(AutoConstants::maxSpeed, AutoConstants::maxAcceleration);
   // Add kinematics to ensure max speed is actually obeyed
@@ -115,22 +130,22 @@ frc2::Command* RobotContainer::GetAutonomousCommand(std::string autoMode) {
     config
   );
 
-  frc::ProfiledPIDController<units::radians> thetaController{
+  ProfiledPIDController<radians> thetaController{
     AutoConstants::pThetaController,
     0,
     0,
     AutoConstants::thetaControllerConstraints
   };
 
-  thetaController.EnableContinuousInput(units::radian_t{-std::numbers::pi}, units::radian_t{std::numbers::pi});
+  thetaController.EnableContinuousInput(radian_t{-pi}, radian_t{pi});
 
-  frc2::SwerveControllerCommand<4> swerveControllerCommand(
+  SwerveControllerCommand<4> swerveControllerCommand(
     exampleTrajectory, [this]() { return driveSubsystem.GetPose(); },
 
     driveSubsystem.kDriveKinematics,
 
-    frc::PIDController{AutoConstants::pXController, 0, 0},
-    frc::PIDController{AutoConstants::pYController, 0, 0},
+    PIDController{AutoConstants::pXController, 0, 0},
+    PIDController{AutoConstants::pYController, 0, 0},
     thetaController,
 
     [this](auto moduleStates) { driveSubsystem.SetModuleStates(moduleStates); },
@@ -142,9 +157,9 @@ frc2::Command* RobotContainer::GetAutonomousCommand(std::string autoMode) {
   driveSubsystem.ResetOdometry(exampleTrajectory.InitialPose());
 
   // no auto
-  return new frc2::SequentialCommandGroup(
-    std::move(swerveControllerCommand),
-    frc2::InstantCommand(
+  return new SequentialCommandGroup(
+    move(swerveControllerCommand),
+    InstantCommand(
       [this]() {
         driveSubsystem.Drive(0_mps, 0_mps, 0_rad_per_s, false, false);
       }, {}
