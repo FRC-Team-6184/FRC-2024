@@ -16,7 +16,16 @@
 #include "Constants.h"
 #include "MAXSwerveModule.h"
 
-class DriveSubsystem : public frc2::SubsystemBase {
+using frc::ADIS16470_IMU;
+using frc::Pose2d;
+using frc::SlewRateLimiter;
+using frc::SwerveDriveKinematics;
+using frc::SwerveDriveOdometry;
+using frc::SwerveModuleState;
+using frc::Translation2d;
+using frc2::SubsystemBase;
+
+class DriveSubsystem : public SubsystemBase {
  public:
   DriveSubsystem();
 
@@ -40,7 +49,8 @@ class DriveSubsystem : public frc2::SubsystemBase {
    * @param rateLimit     Whether to enable rate limiting for smoother control.
    */
   void Drive(units::meters_per_second_t xSpeed,
-             units::meters_per_second_t ySpeed, units::radians_per_second_t rot,
+             units::meters_per_second_t ySpeed,
+             units::radians_per_second_t rot,
              bool fieldRelative, bool rateLimit);
 
   /**
@@ -56,7 +66,7 @@ class DriveSubsystem : public frc2::SubsystemBase {
   /**
    * Sets the drive MotorControllers to a power from -1 to 1.
    */
-  void SetModuleStates(wpi::array<frc::SwerveModuleState, 4> desiredStates);
+  void SetModuleStates(wpi::array<SwerveModuleState, 4> desiredStates);
 
   /**
    * Returns the heading of the robot.
@@ -82,49 +92,47 @@ class DriveSubsystem : public frc2::SubsystemBase {
    *
    * @return The pose.
    */
-  frc::Pose2d GetPose();
+  Pose2d GetPose();
 
   /**
    * Resets the odometry to the specified pose.
    *
    * @param pose The pose to which to set the odometry.
    */
-  void ResetOdometry(frc::Pose2d pose);
+  void ResetOdometry(Pose2d pose);
 
-  frc::SwerveDriveKinematics<4> kDriveKinematics{
-      frc::Translation2d{DriveConstants::kWheelBase / 2,
-                         DriveConstants::kTrackWidth / 2},
-      frc::Translation2d{DriveConstants::kWheelBase / 2,
-                         -DriveConstants::kTrackWidth / 2},
-      frc::Translation2d{-DriveConstants::kWheelBase / 2,
-                         DriveConstants::kTrackWidth / 2},
-      frc::Translation2d{-DriveConstants::kWheelBase / 2,
-                         -DriveConstants::kTrackWidth / 2}};
+  SwerveDriveKinematics<4> kDriveKinematics{
+    Translation2d{DriveConstants::kWheelBase / 2, DriveConstants::kTrackWidth / 2},
+    Translation2d{DriveConstants::kWheelBase / 2, -DriveConstants::kTrackWidth / 2},
+    Translation2d{-DriveConstants::kWheelBase / 2, DriveConstants::kTrackWidth / 2},
+    Translation2d{-DriveConstants::kWheelBase / 2, -DriveConstants::kTrackWidth / 2}
+  };
 
  private:
   // Components (e.g. motor controllers and sensors) should generally be
   // declared private and exposed only through public methods.
 
-  MAXSwerveModule m_frontLeft;
-  MAXSwerveModule m_rearLeft;
-  MAXSwerveModule m_frontRight;
-  MAXSwerveModule m_rearRight;
+  MAXSwerveModule frontLeft;
+  MAXSwerveModule rearLeft;
+  MAXSwerveModule frontRight;
+  MAXSwerveModule rearRight;
 
-  // The gyro sensor
-  frc::ADIS16470_IMU m_gyro;
+  ADIS16470_IMU gyro;
 
   // Slew rate filter variables for controlling lateral acceleration
-  double m_currentRotation = 0.0;
-  double m_currentTranslationDir = 0.0;
-  double m_currentTranslationMag = 0.0;
+  double currentRotation = 0.0;
+  double currentTranslationDir = 0.0;
+  double currentTranslationMag = 0.0;
 
-  frc::SlewRateLimiter<units::scalar> m_magLimiter{
-      DriveConstants::kMagnitudeSlewRate / 1_s};
-  frc::SlewRateLimiter<units::scalar> m_rotLimiter{
-      DriveConstants::kRotationalSlewRate / 1_s};
-  double m_prevTime = wpi::Now() * 1e-6;
+  SlewRateLimiter<units::scalar> magLimiter{
+    DriveConstants::kMagnitudeSlewRate / 1_s
+  };
+  SlewRateLimiter<units::scalar> rotLimiter{
+    DriveConstants::kRotationalSlewRate / 1_s
+  };
+  double prevTime = wpi::Now() * 1e-6;
 
   // Odometry class for tracking robot pose
   // 4 defines the number of modules
-  frc::SwerveDriveOdometry<4> m_odometry;
+  SwerveDriveOdometry<4> odometry;
 };

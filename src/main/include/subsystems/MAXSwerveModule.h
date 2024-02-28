@@ -20,8 +20,7 @@ class MAXSwerveModule {
    * MAXSwerve Module built with NEOs, SPARKS MAX, and a Through Bore
    * Encoder.
    */
-  MAXSwerveModule(int driveCANId, int turningCANId,
-                  double chassisAngularOffset);
+  MAXSwerveModule(int driveCANId, int turningCANId, double chassisAngularOffset);
 
   /**
    * Returns the current state of the module.
@@ -56,15 +55,11 @@ class MAXSwerveModule {
   rev::SparkRelativeEncoder m_drivingEncoder =
       m_drivingSparkMax.GetEncoder(rev::SparkRelativeEncoder::Type::kHallSensor);
   rev::SparkAbsoluteEncoder m_turningAbsoluteEncoder =
-      m_turningSparkMax.GetAbsoluteEncoder(
-          rev::SparkAbsoluteEncoder::Type::kDutyCycle);
+      m_turningSparkMax.GetAbsoluteEncoder(rev::SparkAbsoluteEncoder::Type::kDutyCycle);
 
-  rev::SparkPIDController m_drivingPIDController =
-      m_drivingSparkMax.GetPIDController();
-  rev::SparkPIDController m_turningPIDController =
-      m_turningSparkMax.GetPIDController();
+  rev::SparkPIDController m_drivingPIDController = m_drivingSparkMax.GetPIDController();
+  rev::SparkPIDController m_turningPIDController = m_turningSparkMax.GetPIDController();
 
   double m_chassisAngularOffset = 0;
-  frc::SwerveModuleState m_desiredState{units::meters_per_second_t{0.0},
-                                        frc::Rotation2d()};
+  frc::SwerveModuleState m_desiredState{units::meters_per_second_t{0.0}, frc::Rotation2d()};
 };
