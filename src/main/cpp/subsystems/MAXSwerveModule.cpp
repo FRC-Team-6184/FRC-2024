@@ -24,20 +24,20 @@ MAXSwerveModule::MAXSwerveModule(const int drivingCANId, const int turningCANId,
   // Apply position and velocity conversion factors for the driving encoder. The
   // native units for position and velocity are rotations and RPM, respectively,
   // but we want meters and meters per second to use with WPILib's swerve APIs.
-  m_drivingEncoder.SetPositionConversionFactor(kDrivingEncoderPositionFactor);
+  m_drivingEncoder.SetPositionConversionFactor(drivingEncoderPositionFactor);
   m_drivingEncoder.SetVelocityConversionFactor(kDrivingEncoderVelocityFactor);
 
   // Apply position and velocity conversion factors for the turning encoder. We
   // want these in radians and radians per second to use with WPILib's swerve
   // APIs.
   m_turningAbsoluteEncoder.SetPositionConversionFactor(
-      kTurningEncoderPositionFactor);
+      turningEncoderPositionFactor);
   m_turningAbsoluteEncoder.SetVelocityConversionFactor(
-      kTurningEncoderVelocityFactor);
+      turningEncoderVelocityFactor);
 
   // Invert the turning encoder, since the output shaft rotates in the opposite
   // direction of the steering motor in the MAXSwerve Module.
-  m_turningAbsoluteEncoder.SetInverted(kTurningEncoderInverted);
+  m_turningAbsoluteEncoder.SetInverted(turningEncoderInverted);
 
   // Enable PID wrap around for the turning motor. This will allow the PID
   // controller to go through 0 to get to the setpoint i.e. going from 350
@@ -45,9 +45,9 @@ MAXSwerveModule::MAXSwerveModule(const int drivingCANId, const int turningCANId,
   // which is a longer route.
   m_turningPIDController.SetPositionPIDWrappingEnabled(true);
   m_turningPIDController.SetPositionPIDWrappingMinInput(
-      kTurningEncoderPositionPIDMinInput.value());
+      turningEncoderPositionPIDMinInput.value());
   m_turningPIDController.SetPositionPIDWrappingMaxInput(
-      kTurningEncoderPositionPIDMaxInput.value());
+      turningEncoderPositionPIDMaxInput.value());
         
   // Set the PID Controller to use the duty cycle encoder on the swerve
   // module instead of the built in NEO550 encoder.
@@ -55,24 +55,24 @@ MAXSwerveModule::MAXSwerveModule(const int drivingCANId, const int turningCANId,
 
   // Set the PID gains for the driving motor. Note these are example gains, and
   // you may need to tune them for your own robot!
-  m_drivingPIDController.SetP(kDrivingP);
-  m_drivingPIDController.SetI(kDrivingI);
-  m_drivingPIDController.SetD(kDrivingD);
-  m_drivingPIDController.SetFF(kDrivingFF);
-  m_drivingPIDController.SetOutputRange(kDrivingMinOutput, kDrivingMaxOutput);
+  m_drivingPIDController.SetP(drivingP);
+  m_drivingPIDController.SetI(drivingI);
+  m_drivingPIDController.SetD(drivingD);
+  m_drivingPIDController.SetFF(drivingFF);
+  m_drivingPIDController.SetOutputRange(drivingMinOutput, drivingMaxOutput);
 
   // Set the PID gains for the turning motor. Note these are example gains, and
   // you may need to tune them for your own robot!
-  m_turningPIDController.SetP(kTurningP);
-  m_turningPIDController.SetI(kTurningI);
-  m_turningPIDController.SetD(kTurningD);
-  m_turningPIDController.SetFF(kTurningFF);
-  m_turningPIDController.SetOutputRange(kTurningMinOutput, kTurningMaxOutput);
+  m_turningPIDController.SetP(turningP);
+  m_turningPIDController.SetI(turningI);
+  m_turningPIDController.SetD(turningD);
+  m_turningPIDController.SetFF(turningFF);
+  m_turningPIDController.SetOutputRange(turningMinOutput, turningMaxOutput);
 
-  m_drivingSparkMax.SetIdleMode(kDrivingMotorIdleMode);
-  m_turningSparkMax.SetIdleMode(kTurningMotorIdleMode);
-  m_drivingSparkMax.SetSmartCurrentLimit(kDrivingMotorCurrentLimit.value());
-  m_turningSparkMax.SetSmartCurrentLimit(kDrivingMotorCurrentLimit.value());
+  m_drivingSparkMax.SetIdleMode(drivingMotorIdleMode);
+  m_turningSparkMax.SetIdleMode(turningMotorIdleMode);
+  m_drivingSparkMax.SetSmartCurrentLimit(drivingMotorCurrentLimit.value());
+  m_turningSparkMax.SetSmartCurrentLimit(drivingMotorCurrentLimit.value());
 
   // Save the SPARK MAX configurations. If a SPARK MAX browns out during
   // operation, it will maintain the above configurations.

@@ -102,10 +102,10 @@ class DriveSubsystem : public SubsystemBase {
   void ResetOdometry(Pose2d pose);
 
   SwerveDriveKinematics<4> kDriveKinematics{
-    Translation2d{DriveConstants::kWheelBase / 2, DriveConstants::kTrackWidth / 2},
-    Translation2d{DriveConstants::kWheelBase / 2, -DriveConstants::kTrackWidth / 2},
-    Translation2d{-DriveConstants::kWheelBase / 2, DriveConstants::kTrackWidth / 2},
-    Translation2d{-DriveConstants::kWheelBase / 2, -DriveConstants::kTrackWidth / 2}
+    Translation2d{DriveConstants::wheelBase / 2, DriveConstants::trackWidth / 2},
+    Translation2d{DriveConstants::wheelBase / 2, -DriveConstants::trackWidth / 2},
+    Translation2d{-DriveConstants::wheelBase / 2, DriveConstants::trackWidth / 2},
+    Translation2d{-DriveConstants::wheelBase / 2, -DriveConstants::trackWidth / 2}
   };
 
  private:
@@ -125,10 +125,10 @@ class DriveSubsystem : public SubsystemBase {
   double currentTranslationMag = 0.0;
 
   SlewRateLimiter<units::scalar> magLimiter{
-    DriveConstants::kMagnitudeSlewRate / 1_s
+    DriveConstants::magnitudeSlewRate / 1_s
   };
   SlewRateLimiter<units::scalar> rotLimiter{
-    DriveConstants::kRotationalSlewRate / 1_s
+    DriveConstants::rotationalSlewRate / 1_s
   };
   double prevTime = wpi::Now() * 1e-6;
 

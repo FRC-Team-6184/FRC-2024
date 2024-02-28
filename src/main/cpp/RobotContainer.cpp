@@ -15,13 +15,18 @@
 #include <frc2/command/button/JoystickButton.h>
 #include <units/angle.h>
 #include <units/velocity.h>
-
 #include <utility>
 
 #include "Constants.h"
 #include "subsystems/DriveSubsystem.h"
 
 using namespace DriveConstants;
+using frc::ApplyDeadband;
+using frc::Pose2d;
+using frc::TrajectoryConfig;
+using frc::TrajectoryGenerator;
+using frc::Translation2d;
+using frc::XboxController;
 
 RobotContainer::RobotContainer() {
   // Initialize all of your commands and subsystems here
@@ -46,13 +51,13 @@ RobotContainer::RobotContainer() {
         }
         driveSubsystem.Drive(
           -units::meters_per_second_t{
-            frc::ApplyDeadband(driverController.GetLeftY() * speedMultiplier, OIConstants::driveDeadband)
+            ApplyDeadband(driverController.GetLeftY() * speedMultiplier, OIConstants::driveDeadband)
           },
           -units::meters_per_second_t{
-            frc::ApplyDeadband(driverController.GetLeftX() * speedMultiplier, OIConstants::driveDeadband)
+            ApplyDeadband(driverController.GetLeftX() * speedMultiplier, OIConstants::driveDeadband)
           },
           -units::radians_per_second_t{
-            frc::ApplyDeadband(driverController.GetRightX() * speedMultiplier, OIConstants::driveDeadband)
+            ApplyDeadband(driverController.GetRightX() * speedMultiplier, OIConstants::driveDeadband)
           },
           true,
           true
@@ -64,7 +69,7 @@ RobotContainer::RobotContainer() {
 }
 
 void RobotContainer::ConfigureButtonBindings() {
-  frc2::JoystickButton(&driverController, frc::XboxController::Button::kRightBumper)
+  frc2::JoystickButton(&driverController, XboxController::Button::kRightBumper)
     .WhileTrue(new frc2::RunCommand([this] { driveSubsystem.SetX(); }, {&driveSubsystem}));
 }
 
@@ -83,7 +88,7 @@ void RobotContainer::rightAutoMode() {
 
 frc2::Command* RobotContainer::GetAutonomousCommand(std::string autoMode) {
   // Set up config for trajectory
-  frc::TrajectoryConfig config(AutoConstants::kMaxSpeed, AutoConstants::kMaxAcceleration);
+  TrajectoryConfig config(AutoConstants::maxSpeed, AutoConstants::maxAcceleration);
   // Add kinematics to ensure max speed is actually obeyed
   config.SetKinematics(driveSubsystem.kDriveKinematics);
 
@@ -99,22 +104,22 @@ frc2::Command* RobotContainer::GetAutonomousCommand(std::string autoMode) {
     rightAutoMode();
   }
 
-  auto exampleTrajectory = frc::TrajectoryGenerator::GenerateTrajectory(
+  auto exampleTrajectory = TrajectoryGenerator::GenerateTrajectory(
     // Start at the origin facing the +X direction
-    frc::Pose2d{0_m, 0_m, 0_deg},
+    Pose2d{0_m, 0_m, 0_deg},
     // Pass through these two interior waypoints, making an 's' curve path
-    {frc::Translation2d{.5_m, .5_m}, frc::Translation2d{.5_m, -.5_m}},
+    {Translation2d{.5_m, .5_m}, Translation2d{.5_m, -.5_m}},
     // End 3 meters straight ahead of where we started, facing forward
-    frc::Pose2d{0_m, 0_m, 0_deg},
+    Pose2d{0_m, 0_m, 0_deg},
     // Pass the config
     config
   );
 
   frc::ProfiledPIDController<units::radians> thetaController{
-    AutoConstants::kPThetaController,
+    AutoConstants::pThetaController,
     0,
     0,
-    AutoConstants::kThetaControllerConstraints
+    AutoConstants::thetaControllerConstraints
   };
 
   thetaController.EnableContinuousInput(units::radian_t{-std::numbers::pi}, units::radian_t{std::numbers::pi});
@@ -124,8 +129,8 @@ frc2::Command* RobotContainer::GetAutonomousCommand(std::string autoMode) {
 
     driveSubsystem.kDriveKinematics,
 
-    frc::PIDController{AutoConstants::kPXController, 0, 0},
-    frc::PIDController{AutoConstants::kPYController, 0, 0},
+    frc::PIDController{AutoConstants::pXController, 0, 0},
+    frc::PIDController{AutoConstants::pYController, 0, 0},
     thetaController,
 
     [this](auto moduleStates) { driveSubsystem.SetModuleStates(moduleStates); },

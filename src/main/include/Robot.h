@@ -8,6 +8,7 @@
 #include <frc2/command/Command.h>
 #include <frc/smartdashboard/SendableChooser.h>
 
+#include <rev/CANSparkMax.h>
 #include <ctre/phoenix6/TalonFX.hpp>
 #include "frc/PS5Controller.h"
 
@@ -16,10 +17,14 @@
 
 using ctre::phoenix6::hardware::TalonFX;
 using ctre::phoenix6::controls::Follower;
+using rev::CANSparkMax;
+
 class Robot : public frc::TimedRobot {
  public:
   TalonFX shooter1{ShooterConstants::shooter1CanId};
   TalonFX shooter2{ShooterConstants::shooter2CanId};
+
+  CANSparkMax intakeWheel{IntakeConstants::intakeWheelCanId, CANSparkMax::MotorType::kBrushless};
 
   PS5Controller shooterController{ShooterConstants::shooterControllerPort};
 
@@ -34,6 +39,7 @@ class Robot : public frc::TimedRobot {
   void TestPeriodic() override;
 
   bool shooterOn;
+  bool intakeWheelOn;
 
  private:
   // Have it null by default so that if testing teleop it
@@ -47,7 +53,4 @@ class Robot : public frc::TimedRobot {
   const std::string middleAuto = "Middle";
   const std::string rightAuto = "Right";
   std::string selectedAuto;
-
-
-
 };

@@ -16,24 +16,24 @@ using namespace DriveConstants;
 
 DriveSubsystem::DriveSubsystem()
     : frontLeft{
-        kFrontLeftDrivingCanId,
-        kFrontLeftTurningCanId,
-        kFrontLeftChassisAngularOffset
+        frontLeftDrivingCanId,
+        frontLeftTurningCanId,
+        frontLeftChassisAngularOffset
       },
       rearLeft{
-        kRearLeftDrivingCanId,
-        kRearLeftTurningCanId,
-        kRearLeftChassisAngularOffset
+        rearLeftDrivingCanId,
+        rearLeftTurningCanId,
+        rearLeftChassisAngularOffset
       },
       frontRight{
-        kFrontRightDrivingCanId,
-        kFrontRightTurningCanId,
-        kFrontRightChassisAngularOffset
+        frontRightDrivingCanId,
+        frontRightTurningCanId,
+        frontRightChassisAngularOffset
       },
       rearRight{
-        kRearRightDrivingCanId,
-        kRearRightTurningCanId,
-        kRearRightChassisAngularOffset
+        rearRightDrivingCanId,
+        rearRightTurningCanId,
+        rearRightChassisAngularOffset
       },
       odometry{
         kDriveKinematics,
@@ -78,7 +78,7 @@ void DriveSubsystem::Drive(units::meters_per_second_t xSpeed,
     double directionSlewRate;
     if (currentTranslationMag != 0.0) {
       directionSlewRate =
-          abs(DriveConstants::kDirectionSlewRate / currentTranslationMag);
+          abs(DriveConstants::directionSlewRate / currentTranslationMag);
     } else {
       directionSlewRate = 500.0;  // some high number that means the slew rate
                                   // is effectively instantaneous
@@ -124,11 +124,11 @@ void DriveSubsystem::Drive(units::meters_per_second_t xSpeed,
 
   // Convert the commanded speeds into the correct units for the drivetrain
   units::meters_per_second_t xSpeedDelivered =
-      xSpeedCommanded * DriveConstants::kMaxSpeed;
+      xSpeedCommanded * DriveConstants::maxSpeed;
   units::meters_per_second_t ySpeedDelivered =
-      ySpeedCommanded * DriveConstants::kMaxSpeed;
+      ySpeedCommanded * DriveConstants::maxSpeed;
   units::radians_per_second_t rotDelivered =
-      currentRotation * DriveConstants::kMaxAngularSpeed;
+      currentRotation * DriveConstants::maxAngularSpeed;
 
   auto states = kDriveKinematics.ToSwerveModuleStates(
       fieldRelative
@@ -138,7 +138,7 @@ void DriveSubsystem::Drive(units::meters_per_second_t xSpeed,
                     gyro.GetAngle(frc::ADIS16470_IMU::IMUAxis::kZ)}))
           : frc::ChassisSpeeds{xSpeedDelivered, ySpeedDelivered, rotDelivered});
 
-  kDriveKinematics.DesaturateWheelSpeeds(&states, DriveConstants::kMaxSpeed);
+  kDriveKinematics.DesaturateWheelSpeeds(&states, DriveConstants::maxSpeed);
 
   auto [fl, fr, bl, br] = states;
 
@@ -162,7 +162,7 @@ void DriveSubsystem::SetX() {
 void DriveSubsystem::SetModuleStates(
     wpi::array<frc::SwerveModuleState, 4> desiredStates) {
   kDriveKinematics.DesaturateWheelSpeeds(&desiredStates,
-                                         DriveConstants::kMaxSpeed);
+                                         DriveConstants::maxSpeed);
   frontLeft.SetDesiredState(desiredStates[0]);
   frontRight.SetDesiredState(desiredStates[1]);
   rearLeft.SetDesiredState(desiredStates[2]);

@@ -65,6 +65,7 @@ void Robot::TeleopInit() {
     autonomousCommand = nullptr;
   }
   shooterOn = false;
+  intakeWheelOn = false;
 }
 
 /**
@@ -77,10 +78,19 @@ void Robot::TeleopPeriodic() {
   }
   if (shooterOn) {
     shooter1.Set(-1);
-  }
-  else {
+  } else {
     shooter1.Set(0);
   }
+
+  if (shooterController.GetSquareButtonPressed()) {
+    intakeWheelOn = !intakeWheelOn;
+  }
+   if (intakeWheelOn) {
+    intakeWheel.Set(1);
+  } else {
+    intakeWheel.Set(0);
+  }
+
 }
 
 /**
