@@ -3,16 +3,31 @@
 // the WPILib BSD license file in the root directory of this project.
 
 #include "Robot.h"
+#include "RobotContainer.h"
 
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/CommandScheduler.h>
+#include <frc/Timer.h>
 
+using frc::Timer;
 
 void Robot::RobotInit() {
   autoChooser.SetDefaultOption(leftAuto, leftAuto);
   autoChooser.AddOption(middleAuto, middleAuto);
   autoChooser.AddOption(rightAuto, rightAuto);
   frc::SmartDashboard::PutData("Auto Modes", &autoChooser);
+
+  led.SetLength(LedConstants::ledLength);
+  led.SetData(ledBuffer);
+  led.Start();
+  ledColor = LedConstants::ORANGE;
+
+  direction = 0;
+
+  RTelescopingArm.SetControl(Follower{LTelescopingArm.GetDeviceID(), true});
+  shooter2.SetControl(Follower{shooter1.GetDeviceID(), false});
+
+
 }
 
 /**
@@ -65,14 +80,13 @@ void Robot::TeleopInit() {
     autonomousCommand = nullptr;
   }
   shooterOn = false;
-  intakeWheelOn = false;
+  direction = 0;
 }
 
 /**
  * This function is called periodically during operator control.
  */
 void Robot::TeleopPeriodic() {
-  shooter2.SetControl(Follower{shooter1.GetDeviceID(), false});
   if (shooterController.GetCircleButtonPressed()) {
     shooterOn = !shooterOn;
   }
@@ -82,15 +96,50 @@ void Robot::TeleopPeriodic() {
     shooter1.Set(0);
   }
 
-  if (shooterController.GetSquareButtonPressed()) {
-    intakeWheelOn = !intakeWheelOn;
+  if (!intakeLimitSwitch.Get()) {
+    ledColor = LedConstants::YELLOW;
   }
-   if (intakeWheelOn) {
-    intakeWheel.Set(1);
-  } else {
-    intakeWheel.Set(0);
+  else if (!shooterLimitSwitch.Get()) {
+    ledColor = LedConstants::GREEN;
   }
+  else {
+    ledColor = LedConstants::ORANGE;
+  }
+  for (int i = 0; i < LedConstants::ledLength; i++) {
+    ledBuffer[i].SetRGB(ledColor.red, ledColor.green, ledColor.blue);
+  }
+  led.SetData(ledBuffer);
 
+  if (LTelescopingArm.GetRotorPosition().GetValueAsDouble() < ShooterConstants::telescopingArmMin && shooterController.GetLeftY() > 0) {
+    LTelescopingArm.Set(0);
+  }
+  else if (LTelescopingArm.GetRotorPosition().GetValueAsDouble() > ShooterConstants::telescopingArmMax && shooterController.GetLeftY() < 0) {
+    LTelescopingArm.Set(0);
+  }
+  else {
+    LTelescopingArm.Set(-shooterController.GetLeftY() * 0.2);
+  }
+ 
+  if (shooterController.GetTriangleButtonPressed()) {
+    if (intakeLimitSwitch.Get()) {
+      direction = 1;
+    } else {
+      direction = -1;
+      time = Timer::GetFPGATimestamp();
+    }
+  }
+  if (direction == 1 && !intakeLimitSwitch.Get()) {
+    direction = 0.05;
+  }
+  if (direction == -1 && static_cast<double>(Timer::GetFPGATimestamp() - time) > .5) {
+    direction = 0;
+  }
+  if (shooterController.GetSquareButtonPressed()) {
+    direction = 0;
+  }
+  intakeWheel.Set(direction * (0.3 + 0.2 * (1 + shooterController.GetR2Axis())));
+
+  intakePivot.Set(shooterController.GetRightY() * 0.4);
 }
 
 /**

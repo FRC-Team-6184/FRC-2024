@@ -61,12 +61,40 @@ namespace DriveConstants {
 namespace ShooterConstants {
   constexpr int shooter1CanId = 9;
   constexpr int shooter2CanId = 10;
+  constexpr int shooterLimitSwitchId = 1;
 
   constexpr int shooterControllerPort = 1;
+
+  constexpr int LTelescopingArmCanId = 12;
+  constexpr int RTelescopingArmCanId = 13;
+
+  constexpr double telescopingArmMax = 23.5;
+  constexpr double telescopingArmMin = 0;
+}
+
+struct Color {
+  uint8_t red;
+  uint8_t green;
+  uint8_t blue;
+};
+
+namespace LedConstants {
+  constexpr int ledLightPort = 0;
+  constexpr int ledLength = 50;
+
+  constexpr Color YELLOW = {255, 255, 0};
+  constexpr Color GREEN = {0, 255, 0};
+  constexpr Color ORANGE = {255, 120, 0};
 }
 
 namespace IntakeConstants {
-  constexpr int intakeWheelCanId = 11;
+  constexpr int intakeWheelCanId = 15;
+  constexpr int intakeLimitSwitchId = 0;
+
+  constexpr int intakePivotCanId = 14;
+  
+  constexpr int pivotLimitSwitchUpperId = 2;
+  constexpr int pivotLimitSwitchLowerId = 3;
 }
 
 namespace ModuleConstants {

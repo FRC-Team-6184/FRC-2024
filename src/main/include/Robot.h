@@ -9,24 +9,39 @@
 #include <frc/smartdashboard/SendableChooser.h>
 
 #include <rev/CANSparkMax.h>
+#include <rev/CANSparkFlex.h>
 #include <ctre/phoenix6/TalonFX.hpp>
 #include "frc/PS5Controller.h"
 
 #include "RobotContainer.h"
 #include "Constants.h"
+#include "frc/AddressableLED.h"
 
 using ctre::phoenix6::hardware::TalonFX;
 using ctre::phoenix6::controls::Follower;
 using rev::CANSparkMax;
+using rev::CANSparkFlex;
 
 class Robot : public frc::TimedRobot {
  public:
   TalonFX shooter1{ShooterConstants::shooter1CanId};
   TalonFX shooter2{ShooterConstants::shooter2CanId};
+  frc::DigitalInput shooterLimitSwitch{ShooterConstants::shooterLimitSwitchId};
 
-  CANSparkMax intakeWheel{IntakeConstants::intakeWheelCanId, CANSparkMax::MotorType::kBrushless};
+  TalonFX LTelescopingArm{ShooterConstants::LTelescopingArmCanId};
+  TalonFX RTelescopingArm{ShooterConstants::RTelescopingArmCanId};
+
+  CANSparkFlex intakeWheel{IntakeConstants::intakeWheelCanId, CANSparkMax::MotorType::kBrushless};
+  frc::DigitalInput intakeLimitSwitch {IntakeConstants::intakeLimitSwitchId};
+
+  CANSparkMax intakePivot{IntakeConstants::intakePivotCanId, CANSparkMax::MotorType::kBrushless};
+  frc::DigitalInput pivotLimitSwitchUpper{IntakeConstants::pivotLimitSwitchUpperId};
+  frc::DigitalInput pivotLimitSwitchLower{IntakeConstants::pivotLimitSwitchLowerId};
 
   PS5Controller shooterController{ShooterConstants::shooterControllerPort};
+
+  frc::AddressableLED led{LedConstants::ledLightPort};
+  std::array<frc::AddressableLED::LEDData, LedConstants::ledLength> ledBuffer;
 
   void RobotInit() override;
   void RobotPeriodic() override;
@@ -39,7 +54,11 @@ class Robot : public frc::TimedRobot {
   void TestPeriodic() override;
 
   bool shooterOn;
-  bool intakeWheelOn;
+  units::second_t time;
+  int direction;
+  double telescopingArmDir;
+  
+  Color ledColor;
 
  private:
   // Have it null by default so that if testing teleop it

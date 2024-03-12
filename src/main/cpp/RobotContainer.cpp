@@ -84,8 +84,8 @@ RobotContainer::RobotContainer() {
 }
 
 void RobotContainer::ConfigureButtonBindings() {
-  JoystickButton(&driverController, XboxController::Button::kRightBumper)
-    .WhileTrue(new RunCommand([this] { driveSubsystem.SetX(); }, {&driveSubsystem}));
+  //JoystickButton(&driverController, XboxController::Button::kRightBumper)
+    //.WhileTrue(new RunCommand([this] { driveSubsystem.SetX(); }, {&driveSubsystem}));
 }
 
 void RobotContainer::leftAutoMode(bool orientation) {
