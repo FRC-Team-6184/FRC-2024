@@ -28,16 +28,20 @@ class Robot : public frc::TimedRobot {
   TalonFX shooter2{ShooterConstants::shooter2CanId};
   frc::DigitalInput shooterLimitSwitch{ShooterConstants::shooterLimitSwitchId};
 
+  CANSparkMax pullThrough{ShooterConstants::pullThroughCanId, CANSparkMax::MotorType::kBrushless};
+  CANSparkMax shooterPivot{ShooterConstants::shooterPivotCanId, CANSparkMax::MotorType::kBrushless};
+
   TalonFX LTelescopingArm{ShooterConstants::LTelescopingArmCanId};
   TalonFX RTelescopingArm{ShooterConstants::RTelescopingArmCanId};
 
-  CANSparkFlex intakeWheel{IntakeConstants::intakeWheelCanId, CANSparkMax::MotorType::kBrushless};
+  CANSparkFlex intakeWheel{IntakeConstants::intakeWheelCanId, CANSparkFlex::MotorType::kBrushless};
   frc::DigitalInput intakeLimitSwitch {IntakeConstants::intakeLimitSwitchId};
 
   CANSparkMax intakePivot{IntakeConstants::intakePivotCanId, CANSparkMax::MotorType::kBrushless};
   frc::DigitalInput pivotLimitSwitchUpper{IntakeConstants::pivotLimitSwitchUpperId};
   frc::DigitalInput pivotLimitSwitchLower{IntakeConstants::pivotLimitSwitchLowerId};
-
+  
+  XboxController driverController{OIConstants::driverControllerPort};
   PS5Controller shooterController{ShooterConstants::shooterControllerPort};
 
   frc::AddressableLED led{LedConstants::ledLightPort};
@@ -53,10 +57,14 @@ class Robot : public frc::TimedRobot {
   void TeleopPeriodic() override;
   void TestPeriodic() override;
 
-  bool shooterOn;
-  units::second_t time;
-  int direction;
+  units::second_t intakeTime;
+  units::second_t shooterTime;
+  bool intakeOn;
+  int intakeDirection;
+  bool pullThroughOn;
+  int pullThroughDirection;
   double telescopingArmDir;
+  int pastPOV;
   
   Color ledColor;
 

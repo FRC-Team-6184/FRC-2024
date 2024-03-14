@@ -61,7 +61,11 @@ namespace DriveConstants {
 namespace ShooterConstants {
   constexpr int shooter1CanId = 9;
   constexpr int shooter2CanId = 10;
-  constexpr int shooterLimitSwitchId = 1;
+  constexpr int shooterLimitSwitchId = 8;
+
+  constexpr int shooterPivotCanId = 11;
+
+  constexpr int pullThroughCanId = 16;
 
   constexpr int shooterControllerPort = 1;
 
@@ -89,7 +93,7 @@ namespace LedConstants {
 
 namespace IntakeConstants {
   constexpr int intakeWheelCanId = 15;
-  constexpr int intakeLimitSwitchId = 0;
+  constexpr int intakeLimitSwitchId = 9;
 
   constexpr int intakePivotCanId = 14;
   

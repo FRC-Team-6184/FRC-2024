@@ -36,10 +36,10 @@ class RobotContainer {
 
   Command* GetAutonomousCommand(std::string autoMode);
 
- private:
-  // The driver's controller
   XboxController driverController{OIConstants::driverControllerPort};
-
+ 
+  // The driver's controller
+  private:
   // The robot's subsystems and commands are defined here...
 
   // The robot's subsystems

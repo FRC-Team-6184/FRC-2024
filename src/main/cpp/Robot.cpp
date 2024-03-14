@@ -11,6 +11,7 @@
 
 using frc::Timer;
 
+
 void Robot::RobotInit() {
   autoChooser.SetDefaultOption(leftAuto, leftAuto);
   autoChooser.AddOption(middleAuto, middleAuto);
@@ -22,12 +23,17 @@ void Robot::RobotInit() {
   led.Start();
   ledColor = LedConstants::ORANGE;
 
-  direction = 0;
+  intakeDirection = 0;
+  pullThroughDirection = 0;
 
   RTelescopingArm.SetControl(Follower{LTelescopingArm.GetDeviceID(), true});
   shooter2.SetControl(Follower{shooter1.GetDeviceID(), false});
 
+  LTelescopingArm.SetNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Brake);
+  RTelescopingArm.SetNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Brake);
 
+  shooter1.Set(0);
+  pullThrough.Set(0);
 }
 
 /**
@@ -47,7 +53,11 @@ void Robot::RobotPeriodic() {
  * can use it to reset any subsystem information you want to clear when the
  * robot is disabled.
  */
-void Robot::DisabledInit() {}
+void Robot::DisabledInit() {
+  
+  LTelescopingArm.SetNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Coast);
+  RTelescopingArm.SetNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Coast);
+}
 
 void Robot::DisabledPeriodic() {}
 
@@ -79,22 +89,16 @@ void Robot::TeleopInit() {
     autonomousCommand->Cancel();
     autonomousCommand = nullptr;
   }
-  shooterOn = false;
-  direction = 0;
+  intakeDirection = 1;
+  pullThroughDirection = 1;
+  pastPOV = -1;
 }
 
 /**
  * This function is called periodically during operator control.
  */
 void Robot::TeleopPeriodic() {
-  if (shooterController.GetCircleButtonPressed()) {
-    shooterOn = !shooterOn;
-  }
-  if (shooterOn) {
-    shooter1.Set(-1);
-  } else {
-    shooter1.Set(0);
-  }
+  shooter1.Set(-(shooterController.GetR2Axis() + 1) / 2);
 
   if (!intakeLimitSwitch.Get()) {
     ledColor = LedConstants::YELLOW;
@@ -110,36 +114,62 @@ void Robot::TeleopPeriodic() {
   }
   led.SetData(ledBuffer);
 
-  if (LTelescopingArm.GetRotorPosition().GetValueAsDouble() < ShooterConstants::telescopingArmMin && shooterController.GetLeftY() > 0) {
+  // if (LTelescopingArm.GetRotorPosition().GetValueAsDouble() < ShooterConstants::telescopingArmMin && shooterController.GetLeftY() > 0) {
+  //   LTelescopingArm.Set(0);
+  // } else if (LTelescopingArm.GetRotorPosition().GetValueAsDouble() > ShooterConstants::telescopingArmMax && shooterController.GetLeftY() < 0) {
+  //   LTelescopingArm.Set(0);
+  // } else {
+  //   LTelescopingArm.Set(-shooterController.GetLeftY() * 0.2);
+  if (driverController.GetPOV() == 0) {
+    LTelescopingArm.Set(0.15);
+  } else if (driverController.GetPOV() == 180) {
+    LTelescopingArm.Set(-0.15);
+  } else {
     LTelescopingArm.Set(0);
   }
-  else if (LTelescopingArm.GetRotorPosition().GetValueAsDouble() > ShooterConstants::telescopingArmMax && shooterController.GetLeftY() < 0) {
-    LTelescopingArm.Set(0);
+
+  shooterPivot.Set(shooterController.GetRightY() * 0.3);
+  
+  //frc::SmartDashboard::PutNumber("POV Val", shooterController.GetPOV());
+ 
+  if (shooterController.GetPOV() == 0 && pastPOV != 0) {
+    intakeDirection = -intakeDirection;
+  }
+  if (shooterController.GetL1Button()) {
+    intakeWheel.Set(intakeDirection * 0.5);
   }
   else {
-    LTelescopingArm.Set(-shooterController.GetLeftY() * 0.2);
+    intakeWheel.Set(0);
   }
- 
+  pastPOV = shooterController.GetPOV();
+  
   if (shooterController.GetTriangleButtonPressed()) {
-    if (intakeLimitSwitch.Get()) {
-      direction = 1;
-    } else {
-      direction = -1;
-      time = Timer::GetFPGATimestamp();
-    }
+    pullThroughDirection = -pullThroughDirection;
   }
-  if (direction == 1 && !intakeLimitSwitch.Get()) {
-    direction = 0.05;
+  if (shooterController.GetR1Button()) {
+    pullThrough.Set(pullThroughDirection);
   }
-  if (direction == -1 && static_cast<double>(Timer::GetFPGATimestamp() - time) > .5) {
-    direction = 0;
+  else {
+    pullThrough.Set(0);
   }
-  if (shooterController.GetSquareButtonPressed()) {
-    direction = 0;
-  }
-  intakeWheel.Set(direction * (0.3 + 0.2 * (1 + shooterController.GetR2Axis())));
+  // if (shooterDirection != 0 && static_cast<double> (Timer::GetFPGATimestamp() - shooterTime) > 2) {
+  //   shooterDirection = 0;
+  // }
+  //shooterIntake.Set(shooterDirection);
 
-  intakePivot.Set(shooterController.GetRightY() * 0.4);
+  if (shooterController.GetPSButtonPressed()) {
+    pullThroughDirection = 1;
+    intakeDirection = 1;
+  }
+  
+  intakePivot.Set(shooterController.GetLeftY() * 0.4);
+
+  // if (!pivotLimitSwitchLower.Get() && shooterController.GetRightY() < 0) {
+  //   intakePivot.Set(0);
+  // }
+  // else if (!pivotLimitSwitchUpper.Get() && shooterController.GetRightY() > 0) {
+  //   intakePivot.Set(0);
+  // }
 }
 
 /**

@@ -3,6 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 #include "RobotContainer.h"
+#include "Robot.h"
 
 #include <frc/controller/PIDController.h>
 #include <frc/geometry/Translation2d.h>
@@ -123,9 +124,9 @@ Command* RobotContainer::GetAutonomousCommand(string autoMode) {
     // Start at the origin facing the +X direction
     Pose2d{0_m, 0_m, 0_deg},
     // Pass through these two interior waypoints, making an 's' curve path
-    {Translation2d{.5_m, .5_m}, Translation2d{.5_m, -.5_m}},
+    {},
     // End 3 meters straight ahead of where we started, facing forward
-    Pose2d{0_m, 0_m, 0_deg},
+    Pose2d{0_m, 2_m, 0_deg},
     // Pass the config
     config
   );
