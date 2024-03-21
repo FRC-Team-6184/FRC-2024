@@ -137,7 +137,7 @@ void Robot::AutonomousPeriodic() {
     currentAuto.state = moveBackToShooter;
     currentAuto.stateChange = true;
   } else if (timeDiff > 5) {
-    currentAuto.state = intakingNote;
+    currentAuto.state = intakingNoteAutonomous;
     currentAuto.stateChange = true;
   } else if (timeDiff > 3) {
     currentAuto.state = moveToNote;
@@ -158,7 +158,7 @@ void Robot::AutonomousPeriodic() {
       autonomousCommand2->Schedule();
       shooter1.Set(0);
       pullThrough.Set(0);
-    } else if (currentAuto.state == intakingNote) {
+    } else if (currentAuto.state == intakingNoteAutonomous) {
       autonomousCommand2->Cancel();
       // intake code goes here
     } else if (currentAuto.state == moveBackToShooter) {
@@ -274,11 +274,11 @@ void Robot::automateNoteLoading() {
     intakePivot.Set(0.3);
   } else if (noteAutoLoaderAutomation.state == intakingNote) {
     if (intakeLimitSwitch.Get()) {
-      noteAutoLoaderAutomation.state == intakeRetracting;
+      noteAutoLoaderAutomation.state = intakeRetracting;
       intakeWheel.Set(0);
       return;
-    } else if (Timer::GetFPGATimestamp() -
-                   noteAutoLoaderAutomation.intakeDeployStartTime >
+    } else if (static_cast<double>(Timer::GetFPGATimestamp() -
+                   noteAutoLoaderAutomation.intakeDeployStartTime) >
                10) {
       noteAutoLoaderAutomation.state == cancelling;
       intakeWheel.Set(0);

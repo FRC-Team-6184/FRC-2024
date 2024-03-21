@@ -75,7 +75,7 @@ class Robot : public frc::TimedRobot {
     moveToShooter,
     shootNote1,
     moveToNote,
-    intakingNote,
+    intakingNoteAutonomous,
     moveBackToShooter,
     shootNote2,
     taxi
