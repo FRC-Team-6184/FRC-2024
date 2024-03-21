@@ -117,37 +117,31 @@ void Robot::AutonomousInit() {
   autonomousCommand1 = container.GetAutonomousCommand1(
       autoChooser.GetSelected(), allianceChooser.GetSelected());
   autonomousCommand2 =
-      container.GetAutonomousCommand2(allianceChooser.GetSelected());
+      container.GetAutonomousCommand2(allianceChooser.GetSelected(), allianceChooser.GetSelected());
   autonomousCommand3 =
-      container.GetAutonomousCommand2(allianceChooser.GetSelected());
+      container.GetAutonomousCommand3(allianceChooser.GetSelected(), allianceChooser.GetSelected());
+  autonomousCommand4 =
+      container.GetAutonomousCommand4(allianceChooser.GetSelected(), allianceChooser.GetSelected());
   autoTime = Timer::GetFPGATimestamp();
 }
 
 void Robot::AutonomousPeriodic() {
   double timeDiff = static_cast<double>(Timer::GetFPGATimestamp() - autoTime);
-  if (currentAuto.stateChange) {
-    currentAuto.stateChange = false;
-  } else if (timeDiff > 12) {
+  if (timeDiff > 12) {
     currentAuto.state = taxi;
-    currentAuto.stateChange = true;
   } else if (timeDiff > 11) {
     currentAuto.state = shootNote2;
-    currentAuto.stateChange = true;
   } else if (timeDiff > 9) {
     currentAuto.state = moveBackToShooter;
-    currentAuto.stateChange = true;
   } else if (timeDiff > 5) {
     currentAuto.state = intakingNoteAutonomous;
-    currentAuto.stateChange = true;
   } else if (timeDiff > 3) {
     currentAuto.state = moveToNote;
-    currentAuto.stateChange = true;
   } else if (timeDiff > 2) {
     currentAuto.state = shootNote1;
-    currentAuto.stateChange = true;
   }
 
-  if (currentAuto.stateChange) {
+  if (currentAuto.state != currentAuto.lastTickState) {
     if (currentAuto.state == moveToShooter) {
       autonomousCommand1->Schedule();
     } else if (currentAuto.state == shootNote1) {
@@ -160,19 +154,19 @@ void Robot::AutonomousPeriodic() {
       pullThrough.Set(0);
     } else if (currentAuto.state == intakingNoteAutonomous) {
       autonomousCommand2->Cancel();
-      // intake code goes here
     } else if (currentAuto.state == moveBackToShooter) {
       autonomousCommand3->Schedule();
     } else if (currentAuto.state == shootNote2) {
-      autonomousCommand3->Schedule();
+      autonomousCommand3->Cancel();
       shooter1.Set(-1);
       pullThrough.Set(0.5);
     } else {
-      autonomousCommand3->Cancel();
+      autonomousCommand4->Schedule();
       shooter1.Set(0);
       pullThrough.Set(0);
     }
   }
+  currentAuto.lastTickState = currentAuto.state;
 }
 
 void Robot::TeleopInit() {
@@ -181,9 +175,9 @@ void Robot::TeleopInit() {
   // teleop starts running. If you want the autonomous to
   // continue until interrupted by another command, remove
   // this line or comment it out.
-  if (currentAutonomousCommand != nullptr) {
-    currentAutonomousCommand->Cancel();
-    currentAutonomousCommand = nullptr;
+  if (autonomousCommand4 != nullptr) {
+    autonomousCommand4->Cancel();
+    autonomousCommand4 = nullptr;
   }
   shooter1.Set(0);
 }

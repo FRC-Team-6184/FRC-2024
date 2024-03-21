@@ -85,8 +85,8 @@ void RobotContainer::ConfigureButtonBindings() {
   //{&driveSubsystem}));
 }
 
-Command* RobotContainer::GetAutonomousCommand1(string autoMode,
-                                               string startingPosition) {
+Command* RobotContainer::GetAutonomousCommand1(string position,
+                                               string alliance) {
   // Set up config for trajectory
   TrajectoryConfig config(AutoConstants::maxSpeed,
                           AutoConstants::maxAcceleration);
@@ -94,28 +94,43 @@ Command* RobotContainer::GetAutonomousCommand1(string autoMode,
   config.SetKinematics(driveSubsystem.kDriveKinematics);
 
   // An example trajectory to follow.  All units in meters.
+  int multiplier = 1;
+  if (alliance == "Blue Alliance") {
+    multiplier = -1;
+  }
+
   frc::Trajectory exampleTrajectory;
 
-  if (startingPosition == "Red Alliance") {
+  if (position == "Position 1") {
     exampleTrajectory = TrajectoryGenerator::GenerateTrajectory(
         // Start at the origin facing the +X direction
         Pose2d{0_m, 0_m, 0_deg},
         // Pass through these two interior waypoints, making an 's' curve path
         {},
         // End 3 meters straight ahead of where we started, facing forward
-        Pose2d{2_m, 0_m, 0_deg},
+        Pose2d{-1_m, -multiplier * 0.657_m, multiplier * 60_deg},
         // Pass the config
         config);
-  } else {
+  } else if (position == "Position 2") {
     exampleTrajectory = TrajectoryGenerator::GenerateTrajectory(
         // Start at the origin facing the +X direction
         Pose2d{0_m, 0_m, 0_deg},
-        // Pass through these two interior waypoints, making an 's' curve path
+        // Pass through these interior waypoints
         {},
-        // End 3 meters straight ahead of where we started, facing forward
-        Pose2d{2_m, 0_m, 0_deg},
+        Pose2d{-0.38_m, 0_m, 0_deg},
         // Pass the config
         config);
+  }
+  else {
+    exampleTrajectory = TrajectoryGenerator::GenerateTrajectory(
+      // Start at the origin facing the +X direction
+        Pose2d{0_m, 0_m, 0_deg},
+        // Pass through these interior waypoints
+        {},
+        Pose2d{-1_m, multiplier * 0.657_m, -multiplier * 60_deg},
+        // Pass the config
+        config
+    )
   }
   ProfiledPIDController<radians> thetaController{
       AutoConstants::pThetaController, 0, 0,
@@ -150,24 +165,51 @@ Command* RobotContainer::GetAutonomousCommand1(string autoMode,
           {}));
 }
 
-Command* RobotContainer::GetAutonomousCommand2(string autoMode) {
+Command* RobotContainer::GetAutonomousCommand2(string position, string alliance) {
   // Set up config for trajectory
   TrajectoryConfig config(AutoConstants::maxSpeed,
                           AutoConstants::maxAcceleration);
   // Add kinematics to ensure max speed is actually obeyed
   config.SetKinematics(driveSubsystem.kDriveKinematics);
 
-  // An example trajectory to follow.  All units in meters.
+  int multiplier = 1;
+  if (alliance == "Blue Alliance") {
+    multiplier = -1;
+  }
 
-  auto exampleTrajectory = TrajectoryGenerator::GenerateTrajectory(
+  frc::Trajectory exampleTrajectory;
+
+  if (position == "Position 1") {
+    exampleTrajectory = TrajectoryGenerator::GenerateTrajectory(
+        // Start at the origin facing the +X direction
+        Pose2d{-1_m, -multiplier * 0.657_m, multiplier * 60_deg},
+        // Pass through these two interior waypoints, making an 's' curve path
+        {},
+        // End 3 meters straight ahead of where we started, facing forward
+        Pose2d{1_m, 0_m, 0_deg},
+        // Pass the config
+        config);
+  } else if (position == "Position 2") {
+    exampleTrajectory = TrajectoryGenerator::GenerateTrajectory(
+        // Start at the origin facing the +X direction
+        Pose2d{-0.38_m, 0_m, 0_deg},
+        // Pass through these interior waypoints
+        {},
+        Pose2d{1_m, 0_m, 0_deg},
+        // Pass the config
+        config);
+  }
+  else {
+    exampleTrajectory = TrajectoryGenerator::GenerateTrajectory(
       // Start at the origin facing the +X direction
-      Pose2d{0_m, 0_m, 0_deg},
-      // Pass through these two interior waypoints, making an 's' curve path
-      {},
-      // End 3 meters straight ahead of where we started, facing forward
-      Pose2d{2_m, 0_m, 0_deg},
-      // Pass the config
-      config);
+        Pose2d{-1_m, multiplier * 0.657_m, -multiplier * 60_deg},
+        // Pass through these interior waypoints
+        {},
+        Pose2d{1_m, 0_m, 0_deg},
+        // Pass the config
+        config
+    )
+  }
 
   ProfiledPIDController<radians> thetaController{
       AutoConstants::pThetaController, 0, 0,
@@ -202,7 +244,88 @@ Command* RobotContainer::GetAutonomousCommand2(string autoMode) {
           {}));
 }
 
-Command* RobotContainer::GetAutonomousCommand3(string autoMode) {
+Command* RobotContainer::GetAutonomousCommand3(string position, string alliance) {
+  // Set up config for trajectory
+  TrajectoryConfig config(AutoConstants::maxSpeed,
+                          AutoConstants::maxAcceleration);
+  // Add kinematics to ensure max speed is actually obeyed
+  config.SetKinematics(driveSubsystem.kDriveKinematics);
+
+  // An example trajectory to follow.  All units in meters.
+
+  int multiplier = 1;
+  if (alliance == "Blue Alliance") {
+    multiplier = -1;
+  }
+
+  frc::Trajectory exampleTrajectory;
+
+  if (position == "Position 1") {
+    exampleTrajectory = TrajectoryGenerator::GenerateTrajectory(
+        // Start at the origin facing the +X direction
+        Pose2d{1_m, 0_m, 0_deg},
+        // Pass through these two interior waypoints, making an 's' curve path
+        {},
+        // End 3 meters straight ahead of where we started, facing forward
+        Pose2d{-1_m, -multiplier * 0.657_m, multiplier * 60_deg},
+        // Pass the config
+        config);
+  } else if (position == "Position 2") {
+    exampleTrajectory = TrajectoryGenerator::GenerateTrajectory(
+        // Start at the origin facing the +X direction
+        Pose2d{1_m, 0_m, 0_deg},
+        // Pass through these interior waypoints
+        {},
+        Pose2d{-0.38_m, 0_m, 0_deg},
+        // Pass the config
+        config);
+  }
+  else {
+    exampleTrajectory = TrajectoryGenerator::GenerateTrajectory(
+      // Start at the origin facing the +X direction
+        Pose2d{1_m, 0_m, 0_deg},
+        // Pass through these interior waypoints
+        {},
+        Pose2d{-1_m, multiplier * 0.657_m, -multiplier * 60_deg},
+        // Pass the config
+        config
+    )
+  }
+
+  ProfiledPIDController<radians> thetaController{
+      AutoConstants::pThetaController, 0, 0,
+      AutoConstants::thetaControllerConstraints};
+
+  thetaController.EnableContinuousInput(radian_t{-pi}, radian_t{pi});
+
+  SwerveControllerCommand<4> swerveControllerCommand(
+      exampleTrajectory, [this]() { return driveSubsystem.GetPose(); },
+
+      driveSubsystem.kDriveKinematics,
+
+      PIDController{AutoConstants::pXController, 0, 0},
+      PIDController{AutoConstants::pYController, 0, 0}, thetaController,
+
+      [this](auto moduleStates) {
+        driveSubsystem.SetModuleStates(moduleStates);
+      },
+
+      {&driveSubsystem});
+
+  // Reset odometry to the starting pose of the trajectory.
+  driveSubsystem.ResetOdometry(exampleTrajectory.InitialPose());
+
+  // no auto
+  return new SequentialCommandGroup(
+      move(swerveControllerCommand),
+      InstantCommand(
+          [this]() {
+            driveSubsystem.Drive(0_mps, 0_mps, 0_rad_per_s, false, false);
+          },
+          {}));
+}
+
+Command* RobotContainer::GetAutonomousCommand4(string position, string alliance) {
   // Set up config for trajectory
   TrajectoryConfig config(AutoConstants::maxSpeed,
                           AutoConstants::maxAcceleration);

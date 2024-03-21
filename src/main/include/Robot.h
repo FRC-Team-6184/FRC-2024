@@ -83,6 +83,7 @@ class Robot : public frc::TimedRobot {
 
   struct {
     autoStates state = moveToShooter;
+    autoStates lastTickState = moveToShooter;
     bool stateChange = true;
   } currentAuto;
 
@@ -118,6 +119,7 @@ class Robot : public frc::TimedRobot {
   frc::SendableChooser<std::string> autoChooser;
   const std::string position1 = "Position 1";
   const std::string position2 = "Position 2";
+  const std::string position3 = "Position 3";
   std::string selectedAuto;
 
   frc::SendableChooser<std::string> allianceChooser;

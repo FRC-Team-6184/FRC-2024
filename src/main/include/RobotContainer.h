@@ -34,10 +34,11 @@ class RobotContainer {
  public:
   RobotContainer();
 
-  Command* GetAutonomousCommand1(std::string autoMode,
-                                 std::string startingPosition);
-  Command* GetAutonomousCommand2(std::string autoMode);
-  Command* GetAutonomousCommand3(std::string autoMode);
+  Command* GetAutonomousCommand1(std::string position,
+                                 std::string alliance);
+  Command* GetAutonomousCommand2(std::string position, std::string alliance);
+  Command* GetAutonomousCommand3(std::string position, std::string alliance);
+  Command* GetAutonomousCommand4(std::string position, std::string alliance);
 
   XboxController driverController{OIConstants::driverControllerPort};
 
