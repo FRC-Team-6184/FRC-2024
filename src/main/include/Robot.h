@@ -27,8 +27,8 @@ class Robot : public frc::TimedRobot {
   TalonFX shooter1{ShooterConstants::shooter1CanId};
   TalonFX shooter2{ShooterConstants::shooter2CanId};
   frc::DigitalInput shooterLimitSwitch{ShooterConstants::shooterLimitSwitchId};
-  frc::DigitalInput shooterLoadedLimitSwitch{
-      ShooterConstants::shooterLoadedLimitSwitchId};
+  // frc::DigitalInput shooterLoadedLimitSwitch{
+  //     ShooterConstants::shooterLoadedLimitSwitchId};
 
   CANSparkMax pullThrough{ShooterConstants::pullThroughCanId,
                           CANSparkMax::MotorType::kBrushless};

@@ -64,7 +64,7 @@ namespace ShooterConstants {
 constexpr int shooter1CanId = 9;
 constexpr int shooter2CanId = 10;
 constexpr int shooterLimitSwitchId = 8;
-constexpr int shooterLoadedLimitSwitchId = 9;  // Temporary value
+// constexpr int shooterLoadedLimitSwitchId = 9;  // Temporary value
 
 constexpr int shooterPivotCanId = 11;
 
@@ -96,12 +96,12 @@ constexpr Color ORANGE = {255, 120, 0};
 
 namespace IntakeConstants {
 constexpr int intakeWheelCanId = 15;
-constexpr int intakeLimitSwitchId = 9;
+constexpr int intakeLimitSwitchId = 4;
 
 constexpr int intakePivotCanId = 14;
 
-constexpr int pivotLimitSwitchUpperId = 2;
-constexpr int pivotLimitSwitchLowerId = 3;
+constexpr int pivotLimitSwitchLowerId = 2;
+constexpr int pivotLimitSwitchUpperId = 3;
 }  // namespace IntakeConstants
 
 namespace ModuleConstants {
