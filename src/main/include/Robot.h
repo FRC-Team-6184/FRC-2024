@@ -27,6 +27,7 @@ class Robot : public frc::TimedRobot {
   TalonFX shooter1{ShooterConstants::shooter1CanId};
   TalonFX shooter2{ShooterConstants::shooter2CanId};
   frc::DigitalInput shooterLimitSwitch{ShooterConstants::shooterLimitSwitchId};
+  frc::DigitalInput shooterLoadedLimitSwitch{ShooterConstants::shooterLoadedLimitSwitchId};
 
   CANSparkMax pullThrough{ShooterConstants::pullThroughCanId, CANSparkMax::MotorType::kBrushless};
   CANSparkMax shooterPivot{ShooterConstants::shooterPivotCanId, CANSparkMax::MotorType::kBrushless};
@@ -68,6 +69,13 @@ class Robot : public frc::TimedRobot {
   
   Color ledColor;
 
+  enum noteAutoLoaderStates { off, intakeDeploying, intakingNote, intakeRetracting, shooterDeploying, noteLoading, noteLoaded, cancelling };
+
+  struct {
+    noteAutoLoaderStates state = off;
+    units::second_t intakeDeployStartTime;
+  } noteAutoLoaderAutomation;
+
  private:
   // Have it null by default so that if testing teleop it
   // doesn't have undefined behavior and potentially crash.
@@ -80,4 +88,6 @@ class Robot : public frc::TimedRobot {
   const std::string middleAuto = "Middle";
   const std::string rightAuto = "Right";
   std::string selectedAuto;
+
+  void automateNoteLoading();
 };

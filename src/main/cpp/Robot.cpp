@@ -67,6 +67,7 @@ void Robot::DisabledPeriodic() {}
  */
 void Robot::AutonomousInit() {
   int multiplier = 1;
+  noteAutoLoaderAutomation.state = off;
   std::string selection = autoChooser.GetSelected();
   if (autoChooser.GetSelected() == leftAuto) {
     multiplier = -1;
@@ -81,6 +82,7 @@ void Robot::AutonomousInit() {
 void Robot::AutonomousPeriodic() {}
 
 void Robot::TeleopInit() {
+  noteAutoLoaderAutomation.state = off;
   // This makes sure that the autonomous stops running when
   // teleop starts running. If you want the autonomous to
   // continue until interrupted by another command, remove
@@ -98,6 +100,14 @@ void Robot::TeleopInit() {
  * This function is called periodically during operator control.
  */
 void Robot::TeleopPeriodic() {
+  if (shooterController.GetPOV() == 0 && noteAutoLoaderAutomation.state == off) {
+    noteAutoLoaderAutomation.state = intakeDeploying;
+  }
+
+  if (noteAutoLoaderAutomation.state != off) {
+    automateNoteLoading();
+  }
+
   shooter1.Set(-(shooterController.GetR2Axis() + 1) / 2);
 
   if (!intakeLimitSwitch.Get()) {
@@ -170,6 +180,74 @@ void Robot::TeleopPeriodic() {
   // else if (!pivotLimitSwitchUpper.Get() && shooterController.GetRightY() > 0) {
   //   intakePivot.Set(0);
   // }
+}
+
+void Robot::automateNoteLoading() {
+  if (shooterController.GetPSButton()) {
+    noteAutoLoaderAutomation.state = off;
+    return;
+  }
+  if (noteAutoLoaderAutomation.state == intakeDeploying) {
+    if (pivotLimitSwitchLower.Get()) {
+      noteAutoLoaderAutomation.state = intakingNote;
+      noteAutoLoaderAutomation.intakeDeployStartTime = Timer::GetFPGATimestamp();
+      intakePivot.Set(0);
+      return;
+    }
+    intakePivot.Set(0.3);
+  } else if (noteAutoLoaderAutomation.state == intakingNote) {
+    if (intakeLimitSwitch.Get()) {
+      noteAutoLoaderAutomation.state == intakeRetracting;
+      intakeWheel.Set(0);
+      return;
+    } else if (Timer::GetFPGATimestamp() - noteAutoLoaderAutomation.intakeDeployStartTime > 10 ) {
+      noteAutoLoaderAutomation.state == cancelling;
+      intakeWheel.Set(0);
+      return;
+    }
+    intakeWheel.Set(0.5);
+  } else if (noteAutoLoaderAutomation.state == intakeRetracting) {
+    if (pivotLimitSwitchUpper.Get()) {
+      noteAutoLoaderAutomation.state = shooterDeploying;
+      intakePivot.Set(0);
+      return;
+    }
+    intakePivot.Set(-0.3);
+  } else if (noteAutoLoaderAutomation.state == shooterDeploying) {
+    if (shooterLimitSwitch.Get() && LTelescopingArm.GetRotorPosition().GetValueAsDouble() == 0.0) {
+      noteAutoLoaderAutomation.state == noteLoading;
+      shooterPivot.Set(0);
+      LTelescopingArm.Set(0);
+      return;
+    }
+    if (!shooterLimitSwitch.Get()) {
+      shooterPivot.Set(0.3);
+    } else {
+      shooterPivot.Set(0);
+    }
+    if (LTelescopingArm.GetRotorPosition().GetValueAsDouble() > 0.0) {
+      LTelescopingArm.Set(0.3);
+    } else {
+      LTelescopingArm.Set(0);
+    }
+  } else if (noteAutoLoaderAutomation.state == noteLoading) {
+    if (shooterLoadedLimitSwitch.Get()) {
+      noteAutoLoaderAutomation.state = noteLoaded;
+      pullThrough.Set(0);
+    }
+    pullThrough.Set(1);
+  } else if (noteAutoLoaderAutomation.state == noteLoaded) {
+    if (!shooterLoadedLimitSwitch.Get()) {
+      noteAutoLoaderAutomation.state = off;
+    }
+  } else if (noteAutoLoaderAutomation.state == cancelling) {
+    if (pivotLimitSwitchUpper.Get()) {
+      noteAutoLoaderAutomation.state = off;
+      intakePivot.Set(0);
+      return;
+    }
+    intakePivot.Set(-0.3);
+  }
 }
 
 /**
