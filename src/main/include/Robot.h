@@ -5,22 +5,22 @@
 #pragma once
 
 #include <frc/TimedRobot.h>
-#include <frc2/command/Command.h>
 #include <frc/smartdashboard/SendableChooser.h>
-
-#include <rev/CANSparkMax.h>
+#include <frc2/command/Command.h>
 #include <rev/CANSparkFlex.h>
+#include <rev/CANSparkMax.h>
+
 #include <ctre/phoenix6/TalonFX.hpp>
+
+#include "Constants.h"
+#include "RobotContainer.h"
+#include "frc/AddressableLED.h"
 #include "frc/PS5Controller.h"
 
-#include "RobotContainer.h"
-#include "Constants.h"
-#include "frc/AddressableLED.h"
-
-using ctre::phoenix6::hardware::TalonFX;
 using ctre::phoenix6::controls::Follower;
-using rev::CANSparkMax;
+using ctre::phoenix6::hardware::TalonFX;
 using rev::CANSparkFlex;
+using rev::CANSparkMax;
 
 class Robot : public frc::TimedRobot {
  public:
@@ -28,25 +28,32 @@ class Robot : public frc::TimedRobot {
   TalonFX shooter2{ShooterConstants::shooter2CanId};
   frc::DigitalInput shooterLimitSwitch{ShooterConstants::shooterLimitSwitchId};
 
-  CANSparkMax pullThrough{ShooterConstants::pullThroughCanId, CANSparkMax::MotorType::kBrushless};
-  CANSparkMax shooterPivot{ShooterConstants::shooterPivotCanId, CANSparkMax::MotorType::kBrushless};
+  CANSparkMax pullThrough{ShooterConstants::pullThroughCanId,
+                          CANSparkMax::MotorType::kBrushless};
+  CANSparkMax shooterPivot{ShooterConstants::shooterPivotCanId,
+                           CANSparkMax::MotorType::kBrushless};
 
   TalonFX LTelescopingArm{ShooterConstants::LTelescopingArmCanId};
   TalonFX RTelescopingArm{ShooterConstants::RTelescopingArmCanId};
 
-  CANSparkFlex intakeWheel{IntakeConstants::intakeWheelCanId, CANSparkFlex::MotorType::kBrushless};
-  frc::DigitalInput intakeLimitSwitch {IntakeConstants::intakeLimitSwitchId};
+  CANSparkFlex intakeWheel{IntakeConstants::intakeWheelCanId,
+                           CANSparkFlex::MotorType::kBrushless};
+  frc::DigitalInput intakeLimitSwitch{IntakeConstants::intakeLimitSwitchId};
 
-  CANSparkMax intakePivot{IntakeConstants::intakePivotCanId, CANSparkMax::MotorType::kBrushless};
-  frc::DigitalInput pivotLimitSwitchUpper{IntakeConstants::pivotLimitSwitchUpperId};
-  frc::DigitalInput pivotLimitSwitchLower{IntakeConstants::pivotLimitSwitchLowerId};
-  
+  CANSparkMax intakePivot{IntakeConstants::intakePivotCanId,
+                          CANSparkMax::MotorType::kBrushless};
+  frc::DigitalInput pivotLimitSwitchUpper{
+      IntakeConstants::pivotLimitSwitchUpperId};
+  frc::DigitalInput pivotLimitSwitchLower{
+      IntakeConstants::pivotLimitSwitchLowerId};
+
   XboxController driverController{OIConstants::driverControllerPort};
   PS5Controller shooterController{ShooterConstants::shooterControllerPort};
 
   frc::AddressableLED led{LedConstants::ledLightPort};
   std::array<frc::AddressableLED::LEDData, LedConstants::ledLength> ledBuffer;
 
+  void intakeNote();
   void RobotInit() override;
   void RobotPeriodic() override;
   void DisabledInit() override;
@@ -58,26 +65,45 @@ class Robot : public frc::TimedRobot {
   void TestPeriodic() override;
 
   units::second_t intakeTime;
-  units::second_t shooterTime;
-  bool intakeOn;
-  int intakeDirection;
-  bool pullThroughOn;
-  int pullThroughDirection;
-  double telescopingArmDir;
-  int pastPOV;
-  
+  int intakePivotDirection;
+  bool autonomousRun = false;
+  units::second_t autoTime;
+
+  enum autoStates {
+    moveToShooter,
+    shootNote1,
+    moveToNote,
+    intakingNote,
+    moveBackToShooter,
+    shootNote2,
+    taxi
+  };
+
+  struct {
+    autoStates state = moveToShooter;
+    bool stateChange = true;
+  } currentAuto;
+
   Color ledColor;
 
  private:
   // Have it null by default so that if testing teleop it
   // doesn't have undefined behavior and potentially crash.
-  frc2::Command* autonomousCommand = nullptr;
+  frc2::Command* currentAutonomousCommand = nullptr;
+
+  frc2::Command* autonomousCommand1 = nullptr;
+  frc2::Command* autonomousCommand2 = nullptr;
+  frc2::Command* autonomousCommand3 = nullptr;
 
   RobotContainer container;
 
   frc::SendableChooser<std::string> autoChooser;
-  const std::string leftAuto = "Left";
-  const std::string middleAuto = "Middle";
-  const std::string rightAuto = "Right";
+  const std::string position1 = "Position 1";
+  const std::string position2 = "Position 2";
   std::string selectedAuto;
+
+  frc::SendableChooser<std::string> allianceChooser;
+  const std::string redAlliance = "Red Alliance";
+  const std::string blueAlliance = "Blue Alliance";
+  std::string selectedAlliance;
 };

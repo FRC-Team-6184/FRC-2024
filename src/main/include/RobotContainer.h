@@ -18,8 +18,8 @@
 #include "Constants.h"
 #include "subsystems/DriveSubsystem.h"
 
-using frc::SendableChooser;
 using frc::PS5Controller;
+using frc::SendableChooser;
 using frc::XboxController;
 using frc2::Command;
 
@@ -34,22 +34,23 @@ class RobotContainer {
  public:
   RobotContainer();
 
-  Command* GetAutonomousCommand(std::string autoMode);
+  Command* GetAutonomousCommand1(std::string autoMode,
+                                 std::string startingPosition);
+  Command* GetAutonomousCommand2(std::string autoMode);
+  Command* GetAutonomousCommand3(std::string autoMode);
 
   XboxController driverController{OIConstants::driverControllerPort};
- 
+
+  // bool autonomousShoot;
+
+  // void setAutonomousShoot(bool autonomousShout);
+
   // The driver's controller
-  private:
+ private:
   // The robot's subsystems and commands are defined here...
 
   // The robot's subsystems
   DriveSubsystem driveSubsystem;
 
   void ConfigureButtonBindings();
-
-  void leftAutoMode(bool orientation = false);
-
-  void middleAutoMode();
-
-  void rightAutoMode();
 };
