@@ -79,15 +79,15 @@ void Robot::AutonomousInit() {
   //   multiplier = -1;
   // }
   autoTime = Timer::GetFPGATimestamp();
-  currentAuto.state = moveToShooter;
+  currentAuto.state = autoOff;
   autonomousCommand1 = container.GetAutonomousCommand1(
       autoChooser.GetSelected(), allianceChooser.GetSelected());
   autonomousCommand2 = container.GetAutonomousCommand2(
-      allianceChooser.GetSelected(), allianceChooser.GetSelected());
+      autoChooser.GetSelected(), allianceChooser.GetSelected());
   autonomousCommand3 = container.GetAutonomousCommand3(
-      allianceChooser.GetSelected(), allianceChooser.GetSelected());
+      autoChooser.GetSelected(), allianceChooser.GetSelected());
   autonomousCommand4 = container.GetAutonomousCommand4(
-      allianceChooser.GetSelected(), allianceChooser.GetSelected());
+      autoChooser.GetSelected(), allianceChooser.GetSelected());
   autoTime = Timer::GetFPGATimestamp();
   autonomousCommand1->Schedule();
   shooter1.Set(0);
@@ -108,10 +108,13 @@ void Robot::AutonomousPeriodic() {
     currentAuto.state = moveToNote;
   } else if (timeDiff > 2) {
     currentAuto.state = shootNote1;
+  } else {
+    currentAuto.state = moveToShooter;
   }
 
   if (currentAuto.state != currentAuto.lastTickState) {
     if (currentAuto.state == moveToShooter) {
+      autonomousCommand1->Schedule();
     } else if (currentAuto.state == shootNote1) {
       autonomousCommand1->Cancel();
       shooter1.Set(-1);
@@ -153,6 +156,7 @@ void Robot::TeleopInit() {
     autonomousCommand4 = nullptr;
   }
   shooter1.Set(0);
+  shooterDir = 0;
 }
 
 /**
@@ -181,6 +185,27 @@ void Robot::TeleopPeriodic() {
     ledBuffer[i].SetRGB(ledColor.red, ledColor.green, ledColor.blue);
   }
   led.SetData(ledBuffer);
+
+  if (shooterController.GetCrossButtonPressed()) {
+    shooterDir = 1;
+  }
+  if (shooterController.GetTriangleButtonPressed()) {
+    shooterDir = -1;
+  }
+  if (shooterController.GetCircleButtonPressed()) {
+    shooterDir = 0;
+  }
+
+  if (!shooterLoadedLimitSwitch.Get() && shooterDir != 0) {
+    shooterDir = 0;
+  }
+
+  if (shooterDir != 0) {
+    shooter1.Set(shooterDir * 0.5);
+    pullThrough.Set(shooterDir * 0.5);
+  } else {
+    pullThrough.Set(0);
+  }
 
   // if (driverController.GetPOV() == 0 &&
   //     LTelescopingArm.GetRotorPosition().GetValueAsDouble() <
@@ -357,7 +382,7 @@ void Robot::populateShuffleBoard() {
   frc::SmartDashboard::PutBoolean("Move to Note",
                                   currentAuto.state == moveToNote);
   frc::SmartDashboard::PutBoolean("INtaking Note",
-                                  currentAuto.state == intakingNote);
+                                  currentAuto.state == intakingNoteAutonomous);
   frc::SmartDashboard::PutBoolean("move Back to Shooter",
                                   currentAuto.state == moveBackToShooter);
   frc::SmartDashboard::PutBoolean("Shoot Note 2",

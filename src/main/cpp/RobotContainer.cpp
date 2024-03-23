@@ -7,6 +7,7 @@
 #include <frc/controller/PIDController.h>
 #include <frc/geometry/Translation2d.h>
 #include <frc/shuffleboard/Shuffleboard.h>
+#include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/trajectory/Trajectory.h>
 #include <frc/trajectory/TrajectoryGenerator.h>
 #include <frc2/command/InstantCommand.h>
@@ -99,15 +100,11 @@ Command* RobotContainer::GetAutonomousCommand1(string position,
     multiplier = -1;
   }
 
-  frc::Trajectory exampleTrajectory;
+  frc::Trajectory trajectory1;
 
-  bool working = false;
-  if (position == "Position 2") {
-    working = true;
-  }
-  // frc2::SmartDashboard::
   if (position == "Position 1") {
-    exampleTrajectory = TrajectoryGenerator::GenerateTrajectory(
+    config.SetReversed(true);
+    trajectory1 = TrajectoryGenerator::GenerateTrajectory(
         // Start at the origin facing the +X direction
         Pose2d{0_m, 0_m, 0_deg},
         // Pass through these two interior waypoints, making an 's' curve path
@@ -117,15 +114,15 @@ Command* RobotContainer::GetAutonomousCommand1(string position,
         // Pass the config
         config);
   } else if (position == "Position 2") {
-    exampleTrajectory = TrajectoryGenerator::GenerateTrajectory(
+    trajectory1 = TrajectoryGenerator::GenerateTrajectory(
         // Start at the origin facing the +X direction
         Pose2d{0_m, 0_m, 0_deg},
         // Pass through these interior waypoints
-        {}, Pose2d{-0.3_m, 0_m, 0_deg},
+        {Translation2d{-0.1_m, -0.1_m}}, Pose2d{-0.3_m, 0_m, 0_deg},
         // Pass the config
         config);
   } else {
-    exampleTrajectory = TrajectoryGenerator::GenerateTrajectory(
+    trajectory1 = TrajectoryGenerator::GenerateTrajectory(
         // Start at the origin facing the +X direction
         Pose2d{0_m, 0_m, 0_deg},
         // Pass through these interior waypoints
@@ -140,7 +137,7 @@ Command* RobotContainer::GetAutonomousCommand1(string position,
   thetaController.EnableContinuousInput(radian_t{-pi}, radian_t{pi});
 
   SwerveControllerCommand<4> swerveControllerCommand(
-      exampleTrajectory, [this]() { return driveSubsystem.GetPose(); },
+      trajectory1, [this]() { return driveSubsystem.GetPose(); },
 
       driveSubsystem.kDriveKinematics,
 
@@ -154,7 +151,7 @@ Command* RobotContainer::GetAutonomousCommand1(string position,
       {&driveSubsystem});
 
   // Reset odometry to the starting pose of the trajectory.
-  driveSubsystem.ResetOdometry(exampleTrajectory.InitialPose());
+  driveSubsystem.ResetOdometry(trajectory1.InitialPose());
 
   // no auto
   return new SequentialCommandGroup(
@@ -179,10 +176,10 @@ Command* RobotContainer::GetAutonomousCommand2(string position,
     multiplier = -1;
   }
 
-  frc::Trajectory exampleTrajectory;
+  frc::Trajectory trajectory2;
 
   if (position == "Position 1") {
-    exampleTrajectory = TrajectoryGenerator::GenerateTrajectory(
+    trajectory2 = TrajectoryGenerator::GenerateTrajectory(
         // Start at the origin facing the +X direction
         Pose2d{-1_m, -multiplier * 0.657_m, multiplier * 60_deg},
         // Pass through these two interior waypoints, making an 's' curve path
@@ -192,15 +189,15 @@ Command* RobotContainer::GetAutonomousCommand2(string position,
         // Pass the config
         config);
   } else if (position == "Position 2") {
-    exampleTrajectory = TrajectoryGenerator::GenerateTrajectory(
+    trajectory2 = TrajectoryGenerator::GenerateTrajectory(
         // Start at the origin facing the +X direction
-        Pose2d{-0.3_m, 0_m, 0_deg},
+        Pose2d{0.3_m, 0_m, 0_deg},
         // Pass through these interior waypoints
         {}, Pose2d{1_m, 0_m, 0_deg},
         // Pass the config
         config);
   } else {
-    exampleTrajectory = TrajectoryGenerator::GenerateTrajectory(
+    trajectory2 = TrajectoryGenerator::GenerateTrajectory(
         // Start at the origin facing the +X direction
         Pose2d{-1_m, multiplier * 0.657_m, -multiplier * 60_deg},
         // Pass through these interior waypoints
@@ -216,7 +213,7 @@ Command* RobotContainer::GetAutonomousCommand2(string position,
   thetaController.EnableContinuousInput(radian_t{-pi}, radian_t{pi});
 
   SwerveControllerCommand<4> swerveControllerCommand(
-      exampleTrajectory, [this]() { return driveSubsystem.GetPose(); },
+      trajectory2, [this]() { return driveSubsystem.GetPose(); },
 
       driveSubsystem.kDriveKinematics,
 
@@ -230,7 +227,7 @@ Command* RobotContainer::GetAutonomousCommand2(string position,
       {&driveSubsystem});
 
   // Reset odometry to the starting pose of the trajectory.
-  driveSubsystem.ResetOdometry(exampleTrajectory.InitialPose());
+  driveSubsystem.ResetOdometry(trajectory2.InitialPose());
 
   // no auto
   return new SequentialCommandGroup(
@@ -257,10 +254,10 @@ Command* RobotContainer::GetAutonomousCommand3(string position,
     multiplier = -1;
   }
 
-  frc::Trajectory exampleTrajectory;
+  frc::Trajectory trajectory3;
 
   if (position == "Position 1") {
-    exampleTrajectory = TrajectoryGenerator::GenerateTrajectory(
+    trajectory3 = TrajectoryGenerator::GenerateTrajectory(
         // Start at the origin facing the +X direction
         Pose2d{1_m, 0_m, 0_deg},
         // Pass through these two interior waypoints, making an 's' curve path
@@ -270,7 +267,7 @@ Command* RobotContainer::GetAutonomousCommand3(string position,
         // Pass the config
         config);
   } else if (position == "Position 2") {
-    exampleTrajectory = TrajectoryGenerator::GenerateTrajectory(
+    trajectory3 = TrajectoryGenerator::GenerateTrajectory(
         // Start at the origin facing the +X direction
         Pose2d{1_m, 0_m, 0_deg},
         // Pass through these interior waypoints
@@ -278,7 +275,7 @@ Command* RobotContainer::GetAutonomousCommand3(string position,
         // Pass the config
         config);
   } else {
-    exampleTrajectory = TrajectoryGenerator::GenerateTrajectory(
+    trajectory3 = TrajectoryGenerator::GenerateTrajectory(
         // Start at the origin facing the +X direction
         Pose2d{1_m, 0_m, 0_deg},
         // Pass through these interior waypoints
@@ -294,7 +291,7 @@ Command* RobotContainer::GetAutonomousCommand3(string position,
   thetaController.EnableContinuousInput(radian_t{-pi}, radian_t{pi});
 
   SwerveControllerCommand<4> swerveControllerCommand(
-      exampleTrajectory, [this]() { return driveSubsystem.GetPose(); },
+      trajectory3, [this]() { return driveSubsystem.GetPose(); },
 
       driveSubsystem.kDriveKinematics,
 
@@ -308,7 +305,7 @@ Command* RobotContainer::GetAutonomousCommand3(string position,
       {&driveSubsystem});
 
   // Reset odometry to the starting pose of the trajectory.
-  driveSubsystem.ResetOdometry(exampleTrajectory.InitialPose());
+  driveSubsystem.ResetOdometry(trajectory3.InitialPose());
 
   // no auto
   return new SequentialCommandGroup(
@@ -333,10 +330,10 @@ Command* RobotContainer::GetAutonomousCommand4(string position,
     multiplier = -1;
   }
 
-  frc::Trajectory exampleTrajectory;
+  frc::Trajectory trajectory4;
 
   if (position == "Position 1") {
-    exampleTrajectory = TrajectoryGenerator::GenerateTrajectory(
+    trajectory4 = TrajectoryGenerator::GenerateTrajectory(
         // Start at the origin facing the +X direction
         Pose2d{-1_m, -multiplier * 0.657_m, multiplier * 60_deg},
         // Pass through these two interior waypoints, making an 's' curve path
@@ -346,7 +343,7 @@ Command* RobotContainer::GetAutonomousCommand4(string position,
         // Pass the config
         config);
   } else if (position == "Position 2") {
-    exampleTrajectory = TrajectoryGenerator::GenerateTrajectory(
+    trajectory4 = TrajectoryGenerator::GenerateTrajectory(
         // Start at the origin facing the +X direction
         Pose2d{-0.38_m, 0_m, 0_deg},
         // Pass through these interior waypoints
@@ -355,7 +352,7 @@ Command* RobotContainer::GetAutonomousCommand4(string position,
         // Pass the config
         config);
   } else {
-    exampleTrajectory = TrajectoryGenerator::GenerateTrajectory(
+    trajectory4 = TrajectoryGenerator::GenerateTrajectory(
         // Start at the origin facing the +X direction
         Pose2d{-1_m, multiplier * 0.657_m, -multiplier * 60_deg},
         // Pass through these interior waypoints
@@ -371,7 +368,7 @@ Command* RobotContainer::GetAutonomousCommand4(string position,
   thetaController.EnableContinuousInput(radian_t{-pi}, radian_t{pi});
 
   SwerveControllerCommand<4> swerveControllerCommand(
-      exampleTrajectory, [this]() { return driveSubsystem.GetPose(); },
+      trajectory4, [this]() { return driveSubsystem.GetPose(); },
 
       driveSubsystem.kDriveKinematics,
 
@@ -385,7 +382,7 @@ Command* RobotContainer::GetAutonomousCommand4(string position,
       {&driveSubsystem});
 
   // Reset odometry to the starting pose of the trajectory.
-  driveSubsystem.ResetOdometry(exampleTrajectory.InitialPose());
+  driveSubsystem.ResetOdometry(trajectory4.InitialPose());
 
   // no auto
   return new SequentialCommandGroup(

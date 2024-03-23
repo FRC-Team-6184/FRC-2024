@@ -27,8 +27,8 @@ class Robot : public frc::TimedRobot {
   TalonFX shooter1{ShooterConstants::shooter1CanId};
   TalonFX shooter2{ShooterConstants::shooter2CanId};
   frc::DigitalInput shooterLimitSwitch{ShooterConstants::shooterLimitSwitchId};
-  // frc::DigitalInput shooterLoadedLimitSwitch{
-  //     ShooterConstants::shooterLoadedLimitSwitchId};
+  frc::DigitalInput shooterLoadedLimitSwitch{
+      ShooterConstants::shooterLoadedLimitSwitchId};
 
   CANSparkMax pullThrough{ShooterConstants::pullThroughCanId,
                           CANSparkMax::MotorType::kBrushless};
@@ -70,8 +70,10 @@ class Robot : public frc::TimedRobot {
   int intakePivotDirection;
   bool autonomousRun = false;
   units::second_t autoTime;
+  int shooterDir;
 
   enum autoStates {
+    autoOff,
     moveToShooter,
     shootNote1,
     moveToNote,
@@ -82,8 +84,8 @@ class Robot : public frc::TimedRobot {
   };
 
   struct {
-    autoStates state = moveToShooter;
-    autoStates lastTickState = moveToShooter;
+    autoStates state = autoOff;
+    autoStates lastTickState = autoOff;
     bool stateChange = true;
   } currentAuto;
 
