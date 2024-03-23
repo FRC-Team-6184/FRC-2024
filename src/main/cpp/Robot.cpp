@@ -73,8 +73,12 @@ void Robot::RobotInit() {
   RTelescopingArm.SetNeutralMode(
       ctre::phoenix6::signals::NeutralModeValue::Brake);
 
+  noteAutoLoaderAutomation.telescopingArmOffset = LTelescopingArm.GetRotorPosition().GetValueAsDouble();
+
   shooter1.Set(0);
   pullThrough.Set(0);
+
+  noteAutoLoaderAutomation.state = off;
 }
 
 /**
@@ -154,8 +158,10 @@ void Robot::AutonomousPeriodic() {
       pullThrough.Set(0);
     } else if (currentAuto.state == intakingNoteAutonomous) {
       autonomousCommand2->Cancel();
+      noteAutoLoaderAutomation.state = intakeDeploying;
     } else if (currentAuto.state == moveBackToShooter) {
       autonomousCommand3->Schedule();
+      noteAutoLoaderAutomation.state = off;
     } else if (currentAuto.state == shootNote2) {
       autonomousCommand3->Cancel();
       shooter1.Set(-1);
@@ -167,6 +173,9 @@ void Robot::AutonomousPeriodic() {
     }
   }
   currentAuto.lastTickState = currentAuto.state;
+  if (noteAutoLoaderAutomation.state != off) {
+    automateNoteLoading();
+  }
 }
 
 void Robot::TeleopInit() {
@@ -197,6 +206,7 @@ void Robot::TeleopPeriodic() {
   frc::SmartDashboard::PutBoolean("Cancelling", noteAutoLoaderAutomation.state == cancelling);
   frc::SmartDashboard::PutBoolean("Pivot Limit Switch Lower", pivotLimitSwitchLower.Get());
   frc::SmartDashboard::PutBoolean("Pivot Limit Switch Upper", pivotLimitSwitchUpper.Get());
+  frc::SmartDashboard::PutNumber("LTelescopingArm.GetRotorPosition()", LTelescopingArm.GetRotorPosition().GetValueAsDouble());
   if (shooterController.GetPOV() == 0 &&
       noteAutoLoaderAutomation.state == off) {
     noteAutoLoaderAutomation.state = intakeDeploying;
@@ -297,24 +307,31 @@ void Robot::automateNoteLoading() {
       return;
     }
     intakePivot.Set(-0.1);
+    if (LTelescopingArm.GetRotorPosition().GetValueAsDouble() - noteAutoLoaderAutomation.telescopingArmOffset < ShooterConstants::telescopingArmMax) {
+      LTelescopingArm.Set(0.15);
+    }
+    else {
+      LTelescopingArm.Set(0);
+    }
   } else if (noteAutoLoaderAutomation.state == shooterDeploying) {
     if (!shooterLimitSwitch.Get() &&
-        LTelescopingArm.GetRotorPosition().GetValueAsDouble() == 0.0) {
+        LTelescopingArm.GetRotorPosition().GetValueAsDouble() - noteAutoLoaderAutomation.telescopingArmOffset <= 0.01) {
       noteAutoLoaderAutomation.state == noteLoading;
       shooterPivot.Set(0);
       LTelescopingArm.Set(0);
       return;
     }
     if (shooterLimitSwitch.Get()) {
-      shooterPivot.Set(0.09);
+      shooterPivot.Set(-0.09);
     } else {
       shooterPivot.Set(0);
     }
-    if (LTelescopingArm.GetRotorPosition().GetValueAsDouble() > 0.01) {
-      LTelescopingArm.Set(0.09);
+    if (LTelescopingArm.GetRotorPosition().GetValueAsDouble() - noteAutoLoaderAutomation.telescopingArmOffset > 0.01) {
+      LTelescopingArm.Set(-0.09);
     } else {
       LTelescopingArm.Set(0);
     }
+    pullThrough.Set(1);
   } else if (noteAutoLoaderAutomation.state == noteLoading) {
     if (false) {
     // if shooterLoadedLimitSwitch.Get()) {
@@ -322,6 +339,7 @@ void Robot::automateNoteLoading() {
       pullThrough.Set(0);
     }
     pullThrough.Set(1);
+    intakeWheel.Set(-0.5);
   } else if (noteAutoLoaderAutomation.state == noteLoaded) {
     if (false) {
     // if (!shooterLoadedLimitSwitch.Get()) {

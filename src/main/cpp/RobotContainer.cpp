@@ -130,7 +130,7 @@ Command* RobotContainer::GetAutonomousCommand1(string position,
         Pose2d{-1_m, multiplier * 0.657_m, -multiplier * 60_deg},
         // Pass the config
         config
-    )
+    );
   }
   ProfiledPIDController<radians> thetaController{
       AutoConstants::pThetaController, 0, 0,
@@ -208,7 +208,7 @@ Command* RobotContainer::GetAutonomousCommand2(string position, string alliance)
         Pose2d{1_m, 0_m, 0_deg},
         // Pass the config
         config
-    )
+    );
   }
 
   ProfiledPIDController<radians> thetaController{
@@ -289,7 +289,7 @@ Command* RobotContainer::GetAutonomousCommand3(string position, string alliance)
         Pose2d{-1_m, multiplier * 0.657_m, -multiplier * 60_deg},
         // Pass the config
         config
-    )
+    );
   }
 
   ProfiledPIDController<radians> thetaController{
@@ -332,17 +332,44 @@ Command* RobotContainer::GetAutonomousCommand4(string position, string alliance)
   // Add kinematics to ensure max speed is actually obeyed
   config.SetKinematics(driveSubsystem.kDriveKinematics);
 
-  // An example trajectory to follow.  All units in meters.
+  int multiplier = 1;
+  if (alliance == "Blue Alliance") {
+    multiplier = -1;
+  }
 
-  auto exampleTrajectory = TrajectoryGenerator::GenerateTrajectory(
+  frc::Trajectory exampleTrajectory;
+
+  if (position == "Position 1") {
+    exampleTrajectory = TrajectoryGenerator::GenerateTrajectory(
+        // Start at the origin facing the +X direction
+        Pose2d{-1_m, -multiplier * 0.657_m, multiplier * 60_deg},
+        // Pass through these two interior waypoints, making an 's' curve path
+        {Translation2d{0_m, multiplier * 3_m}},
+        // End 3 meters straight ahead of where we started, facing forward
+        Pose2d{4_m, multiplier * 3_m, 0_deg},
+        // Pass the config
+        config);
+  } else if (position == "Position 2") {
+    exampleTrajectory = TrajectoryGenerator::GenerateTrajectory(
+        // Start at the origin facing the +X direction
+        Pose2d{-0.38_m, 0_m, 0_deg},
+        // Pass through these interior waypoints
+        {Translation2d{1_m, -multiplier * 0.5_m}},
+        Pose2d{4_m, -multiplier * 0.5_m, 0_deg},
+        // Pass the config
+        config);
+  }
+  else {
+    exampleTrajectory = TrajectoryGenerator::GenerateTrajectory(
       // Start at the origin facing the +X direction
-      Pose2d{0_m, 0_m, 0_deg},
-      // Pass through these two interior waypoints, making an 's' curve path
-      {},
-      // End 3 meters straight ahead of where we started, facing forward
-      Pose2d{2_m, 0_m, 0_deg},
-      // Pass the config
-      config);
+        Pose2d{-1_m, multiplier * 0.657_m, -multiplier * 60_deg},
+        // Pass through these interior waypoints
+        {Translation2d{1_m, 0_m}},
+        Pose2d{4_m, 0_m, 0_deg},
+        // Pass the config
+        config
+    );
+  }
 
   ProfiledPIDController<radians> thetaController{
       AutoConstants::pThetaController, 0, 0,

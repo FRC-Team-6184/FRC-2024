@@ -103,6 +103,7 @@ class Robot : public frc::TimedRobot {
   struct {
     noteAutoLoaderStates state = off;
     units::second_t intakeDeployStartTime;
+    double telescopingArmOffset;
   } noteAutoLoaderAutomation;
 
  private:
@@ -113,6 +114,7 @@ class Robot : public frc::TimedRobot {
   frc2::Command* autonomousCommand1 = nullptr;
   frc2::Command* autonomousCommand2 = nullptr;
   frc2::Command* autonomousCommand3 = nullptr;
+  frc2::Command* autonomousCommand4 = nullptr;
 
   RobotContainer container;
 
