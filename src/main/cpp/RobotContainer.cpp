@@ -101,6 +101,11 @@ Command* RobotContainer::GetAutonomousCommand1(string position,
 
   frc::Trajectory exampleTrajectory;
 
+  bool working = false;
+  if (position == "Position 2") {
+    working = true;
+  }
+  // frc2::SmartDashboard::
   if (position == "Position 1") {
     exampleTrajectory = TrajectoryGenerator::GenerateTrajectory(
         // Start at the origin facing the +X direction
@@ -116,21 +121,17 @@ Command* RobotContainer::GetAutonomousCommand1(string position,
         // Start at the origin facing the +X direction
         Pose2d{0_m, 0_m, 0_deg},
         // Pass through these interior waypoints
-        {},
-        Pose2d{-0.38_m, 0_m, 0_deg},
+        {}, Pose2d{-0.3_m, 0_m, 0_deg},
         // Pass the config
         config);
-  }
-  else {
+  } else {
     exampleTrajectory = TrajectoryGenerator::GenerateTrajectory(
-      // Start at the origin facing the +X direction
+        // Start at the origin facing the +X direction
         Pose2d{0_m, 0_m, 0_deg},
         // Pass through these interior waypoints
-        {},
-        Pose2d{-1_m, multiplier * 0.657_m, -multiplier * 60_deg},
+        {}, Pose2d{-1_m, multiplier * 0.657_m, -multiplier * 60_deg},
         // Pass the config
-        config
-    );
+        config);
   }
   ProfiledPIDController<radians> thetaController{
       AutoConstants::pThetaController, 0, 0,
@@ -165,7 +166,8 @@ Command* RobotContainer::GetAutonomousCommand1(string position,
           {}));
 }
 
-Command* RobotContainer::GetAutonomousCommand2(string position, string alliance) {
+Command* RobotContainer::GetAutonomousCommand2(string position,
+                                               string alliance) {
   // Set up config for trajectory
   TrajectoryConfig config(AutoConstants::maxSpeed,
                           AutoConstants::maxAcceleration);
@@ -192,23 +194,19 @@ Command* RobotContainer::GetAutonomousCommand2(string position, string alliance)
   } else if (position == "Position 2") {
     exampleTrajectory = TrajectoryGenerator::GenerateTrajectory(
         // Start at the origin facing the +X direction
-        Pose2d{-0.38_m, 0_m, 0_deg},
+        Pose2d{-0.3_m, 0_m, 0_deg},
         // Pass through these interior waypoints
-        {},
-        Pose2d{1_m, 0_m, 0_deg},
+        {}, Pose2d{1_m, 0_m, 0_deg},
         // Pass the config
         config);
-  }
-  else {
+  } else {
     exampleTrajectory = TrajectoryGenerator::GenerateTrajectory(
-      // Start at the origin facing the +X direction
+        // Start at the origin facing the +X direction
         Pose2d{-1_m, multiplier * 0.657_m, -multiplier * 60_deg},
         // Pass through these interior waypoints
-        {},
-        Pose2d{1_m, 0_m, 0_deg},
+        {}, Pose2d{1_m, 0_m, 0_deg},
         // Pass the config
-        config
-    );
+        config);
   }
 
   ProfiledPIDController<radians> thetaController{
@@ -244,7 +242,8 @@ Command* RobotContainer::GetAutonomousCommand2(string position, string alliance)
           {}));
 }
 
-Command* RobotContainer::GetAutonomousCommand3(string position, string alliance) {
+Command* RobotContainer::GetAutonomousCommand3(string position,
+                                               string alliance) {
   // Set up config for trajectory
   TrajectoryConfig config(AutoConstants::maxSpeed,
                           AutoConstants::maxAcceleration);
@@ -275,21 +274,17 @@ Command* RobotContainer::GetAutonomousCommand3(string position, string alliance)
         // Start at the origin facing the +X direction
         Pose2d{1_m, 0_m, 0_deg},
         // Pass through these interior waypoints
-        {},
-        Pose2d{-0.38_m, 0_m, 0_deg},
+        {}, Pose2d{-0.38_m, 0_m, 0_deg},
         // Pass the config
         config);
-  }
-  else {
+  } else {
     exampleTrajectory = TrajectoryGenerator::GenerateTrajectory(
-      // Start at the origin facing the +X direction
+        // Start at the origin facing the +X direction
         Pose2d{1_m, 0_m, 0_deg},
         // Pass through these interior waypoints
-        {},
-        Pose2d{-1_m, multiplier * 0.657_m, -multiplier * 60_deg},
+        {}, Pose2d{-1_m, multiplier * 0.657_m, -multiplier * 60_deg},
         // Pass the config
-        config
-    );
+        config);
   }
 
   ProfiledPIDController<radians> thetaController{
@@ -325,7 +320,8 @@ Command* RobotContainer::GetAutonomousCommand3(string position, string alliance)
           {}));
 }
 
-Command* RobotContainer::GetAutonomousCommand4(string position, string alliance) {
+Command* RobotContainer::GetAutonomousCommand4(string position,
+                                               string alliance) {
   // Set up config for trajectory
   TrajectoryConfig config(AutoConstants::maxSpeed,
                           AutoConstants::maxAcceleration);
@@ -358,17 +354,14 @@ Command* RobotContainer::GetAutonomousCommand4(string position, string alliance)
         Pose2d{4_m, -multiplier * 0.5_m, 0_deg},
         // Pass the config
         config);
-  }
-  else {
+  } else {
     exampleTrajectory = TrajectoryGenerator::GenerateTrajectory(
-      // Start at the origin facing the +X direction
+        // Start at the origin facing the +X direction
         Pose2d{-1_m, multiplier * 0.657_m, -multiplier * 60_deg},
         // Pass through these interior waypoints
-        {Translation2d{1_m, 0_m}},
-        Pose2d{4_m, 0_m, 0_deg},
+        {Translation2d{1_m, 0_m}}, Pose2d{4_m, 0_m, 0_deg},
         // Pass the config
-        config
-    );
+        config);
   }
 
   ProfiledPIDController<radians> thetaController{

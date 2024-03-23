@@ -129,4 +129,7 @@ class Robot : public frc::TimedRobot {
   const std::string blueAlliance = "Blue Alliance";
   std::string selectedAlliance;
   void automateNoteLoading();
+  std::string noteAutoLoaderStateString();
+  void initializeShuffleBoard();
+  void populateShuffleBoard();
 };

@@ -5,61 +5,17 @@
 #include "Robot.h"
 
 #include <frc/Timer.h>
+#include <frc/shuffleboard/Shuffleboard.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/CommandScheduler.h>
 
 #include "RobotContainer.h"
 
+using frc::Shuffleboard;
+using frc::ShuffleboardTab;
 using frc::Timer;
 
-// void Robot::intakeNote() {
-//   if (pivotLimitSwitchLower.Get() && intakeLimitSwitch.Get()) {
-//     intakePivot.Set(.5);
-//   }
-//   if (!pivotLimitSwitchLower.Get() && intakeLimitSwitch.Get()) {
-//     intakePivot.Set(0);
-//     intakeWheel.Set(0.5);
-//     intakeTime = Timer::GetFPGATimestamp();
-//   }
-//   if (!intakeLimitSwitch.Get() && !pivotLimitSwitchLower.Get()) {
-//     intakeWheel.Set(0);
-//     pullThrough.Set(1);
-//     if (LTelescopingArm.GetRotorPosition().GetValueAsDouble() <
-//     ShooterConstants::telescopingArmMax) {
-//       LTelescopingArm.Set(0.3);
-//     }
-//     else {
-//       LTelescopingArm.Set(0);
-//     }
-//     if (pivotLimitSwitchUpper.Get()) {
-//       intakePivot.Set(0.5);
-//     }
-//   }
-//   if (!intakeLimitSwitch.Get() && !pivotLimitSwitchUpper.Get()) {
-//     if (LTelescopingArm.GetRotorPosition.GetValueAsDouble() >
-//     ShooterConstants::telescopingArmMin) {
-//       LTelescopingArm.Set(-0.3);
-//     }
-//     else {
-//       LTelescopingArm.Set(0);
-//     }
-//   }
-//   if (static_cast<double>(Timer::GetFPGATimestamp() - intakeTime) > 10 &&
-//       intakeLimitSwitch.Get()) {
-//     intakeWheel.Set(0);
-//     intakePivot.Set(-0.5);
-//   }
-// }
-
 void Robot::RobotInit() {
-  autoChooser.SetDefaultOption(position1, position1);
-  autoChooser.AddOption(position2, position2);
-  frc::SmartDashboard::PutData("Auto Modes", &autoChooser);
-
-  allianceChooser.SetDefaultOption(redAlliance, redAlliance);
-  allianceChooser.AddOption(blueAlliance, blueAlliance);
-  frc::SmartDashboard::PutData("Alliance Selector", &allianceChooser);
-
   led.SetLength(LedConstants::ledLength);
   led.SetData(ledBuffer);
   led.Start();
@@ -73,12 +29,15 @@ void Robot::RobotInit() {
   RTelescopingArm.SetNeutralMode(
       ctre::phoenix6::signals::NeutralModeValue::Brake);
 
-  noteAutoLoaderAutomation.telescopingArmOffset = LTelescopingArm.GetRotorPosition().GetValueAsDouble();
+  noteAutoLoaderAutomation.telescopingArmOffset =
+      LTelescopingArm.GetRotorPosition().GetValueAsDouble();
 
   shooter1.Set(0);
   pullThrough.Set(0);
 
   noteAutoLoaderAutomation.state = off;
+
+  initializeShuffleBoard();
 }
 
 /**
@@ -89,7 +48,10 @@ void Robot::RobotInit() {
  * <p> This runs after the mode specific periodic functions, but before
  * LiveWindow and SmartDashboard integrated updating.
  */
-void Robot::RobotPeriodic() { frc2::CommandScheduler::GetInstance().Run(); }
+void Robot::RobotPeriodic() {
+  frc2::CommandScheduler::GetInstance().Run();
+  populateShuffleBoard();
+}
 
 /**
  * This function is called once each time the robot enters Disabled mode. You
@@ -120,13 +82,16 @@ void Robot::AutonomousInit() {
   currentAuto.state = moveToShooter;
   autonomousCommand1 = container.GetAutonomousCommand1(
       autoChooser.GetSelected(), allianceChooser.GetSelected());
-  autonomousCommand2 =
-      container.GetAutonomousCommand2(allianceChooser.GetSelected(), allianceChooser.GetSelected());
-  autonomousCommand3 =
-      container.GetAutonomousCommand3(allianceChooser.GetSelected(), allianceChooser.GetSelected());
-  autonomousCommand4 =
-      container.GetAutonomousCommand4(allianceChooser.GetSelected(), allianceChooser.GetSelected());
+  autonomousCommand2 = container.GetAutonomousCommand2(
+      allianceChooser.GetSelected(), allianceChooser.GetSelected());
+  autonomousCommand3 = container.GetAutonomousCommand3(
+      allianceChooser.GetSelected(), allianceChooser.GetSelected());
+  autonomousCommand4 = container.GetAutonomousCommand4(
+      allianceChooser.GetSelected(), allianceChooser.GetSelected());
   autoTime = Timer::GetFPGATimestamp();
+  autonomousCommand1->Schedule();
+  shooter1.Set(0);
+  pullThrough.Set(0);
 }
 
 void Robot::AutonomousPeriodic() {
@@ -147,29 +112,28 @@ void Robot::AutonomousPeriodic() {
 
   if (currentAuto.state != currentAuto.lastTickState) {
     if (currentAuto.state == moveToShooter) {
-      autonomousCommand1->Schedule();
     } else if (currentAuto.state == shootNote1) {
       autonomousCommand1->Cancel();
       shooter1.Set(-1);
-      pullThrough.Set(0.5);
+      // pullThrough.Set(0.5);
     } else if (currentAuto.state == moveToNote) {
       autonomousCommand2->Schedule();
       shooter1.Set(0);
-      pullThrough.Set(0);
+      // pullThrough.Set(0);
     } else if (currentAuto.state == intakingNoteAutonomous) {
       autonomousCommand2->Cancel();
-      noteAutoLoaderAutomation.state = intakeDeploying;
+      // noteAutoLoaderAutomation.state = intakeDeploying;
     } else if (currentAuto.state == moveBackToShooter) {
       autonomousCommand3->Schedule();
       noteAutoLoaderAutomation.state = off;
     } else if (currentAuto.state == shootNote2) {
       autonomousCommand3->Cancel();
       shooter1.Set(-1);
-      pullThrough.Set(0.5);
+      // pullThrough.Set(0.5);
     } else {
-      autonomousCommand4->Schedule();
+      // autonomousCommand4->Schedule();
       shooter1.Set(0);
-      pullThrough.Set(0);
+      // pullThrough.Set(0);
     }
   }
   currentAuto.lastTickState = currentAuto.state;
@@ -195,18 +159,6 @@ void Robot::TeleopInit() {
  * This function is called periodically during operator control.
  */
 void Robot::TeleopPeriodic() {
-  frc::SmartDashboard::PutString("------------------------", "------------------------");
-  frc::SmartDashboard::PutBoolean("Off", noteAutoLoaderAutomation.state == off);
-  frc::SmartDashboard::PutBoolean("Intake Deploying", noteAutoLoaderAutomation.state == intakeDeploying);
-  frc::SmartDashboard::PutBoolean("Intaking Note", noteAutoLoaderAutomation.state == intakingNote);
-  frc::SmartDashboard::PutBoolean("Intake Retracting", noteAutoLoaderAutomation.state == intakeRetracting);
-  frc::SmartDashboard::PutBoolean("Shooter Deploying", noteAutoLoaderAutomation.state == shooterDeploying);
-  frc::SmartDashboard::PutBoolean("Note Loading", noteAutoLoaderAutomation.state == noteLoading);
-  frc::SmartDashboard::PutBoolean("Note Loaded", noteAutoLoaderAutomation.state == noteLoaded);
-  frc::SmartDashboard::PutBoolean("Cancelling", noteAutoLoaderAutomation.state == cancelling);
-  frc::SmartDashboard::PutBoolean("Pivot Limit Switch Lower", pivotLimitSwitchLower.Get());
-  frc::SmartDashboard::PutBoolean("Pivot Limit Switch Upper", pivotLimitSwitchUpper.Get());
-  frc::SmartDashboard::PutNumber("LTelescopingArm.GetRotorPosition()", LTelescopingArm.GetRotorPosition().GetValueAsDouble());
   if (shooterController.GetPOV() == 0 &&
       noteAutoLoaderAutomation.state == off) {
     noteAutoLoaderAutomation.state = intakeDeploying;
@@ -292,9 +244,9 @@ void Robot::automateNoteLoading() {
       noteAutoLoaderAutomation.state = intakeRetracting;
       intakeWheel.Set(0);
       return;
-    } else if (static_cast<double>(Timer::GetFPGATimestamp() -
-                   noteAutoLoaderAutomation.intakeDeployStartTime) >
-               10) {
+    } else if (static_cast<double>(
+                   Timer::GetFPGATimestamp() -
+                   noteAutoLoaderAutomation.intakeDeployStartTime) > 10) {
       noteAutoLoaderAutomation.state == cancelling;
       intakeWheel.Set(0);
       return;
@@ -307,15 +259,18 @@ void Robot::automateNoteLoading() {
       return;
     }
     intakePivot.Set(-0.1);
-    if (LTelescopingArm.GetRotorPosition().GetValueAsDouble() - noteAutoLoaderAutomation.telescopingArmOffset < ShooterConstants::telescopingArmMax) {
+    if (LTelescopingArm.GetRotorPosition().GetValueAsDouble() -
+            noteAutoLoaderAutomation.telescopingArmOffset <
+        ShooterConstants::telescopingArmMax) {
       LTelescopingArm.Set(0.15);
-    }
-    else {
+    } else {
       LTelescopingArm.Set(0);
     }
   } else if (noteAutoLoaderAutomation.state == shooterDeploying) {
     if (!shooterLimitSwitch.Get() &&
-        LTelescopingArm.GetRotorPosition().GetValueAsDouble() - noteAutoLoaderAutomation.telescopingArmOffset <= 0.01) {
+        LTelescopingArm.GetRotorPosition().GetValueAsDouble() -
+                noteAutoLoaderAutomation.telescopingArmOffset <=
+            0.01) {
       noteAutoLoaderAutomation.state == noteLoading;
       shooterPivot.Set(0);
       LTelescopingArm.Set(0);
@@ -326,7 +281,9 @@ void Robot::automateNoteLoading() {
     } else {
       shooterPivot.Set(0);
     }
-    if (LTelescopingArm.GetRotorPosition().GetValueAsDouble() - noteAutoLoaderAutomation.telescopingArmOffset > 0.01) {
+    if (LTelescopingArm.GetRotorPosition().GetValueAsDouble() -
+            noteAutoLoaderAutomation.telescopingArmOffset >
+        0.01) {
       LTelescopingArm.Set(-0.09);
     } else {
       LTelescopingArm.Set(0);
@@ -334,7 +291,7 @@ void Robot::automateNoteLoading() {
     pullThrough.Set(1);
   } else if (noteAutoLoaderAutomation.state == noteLoading) {
     if (false) {
-    // if shooterLoadedLimitSwitch.Get()) {
+      // if shooterLoadedLimitSwitch.Get()) {
       noteAutoLoaderAutomation.state = noteLoaded;
       pullThrough.Set(0);
     }
@@ -342,7 +299,7 @@ void Robot::automateNoteLoading() {
     intakeWheel.Set(-0.5);
   } else if (noteAutoLoaderAutomation.state == noteLoaded) {
     if (false) {
-    // if (!shooterLoadedLimitSwitch.Get()) {
+      // if (!shooterLoadedLimitSwitch.Get()) {
       noteAutoLoaderAutomation.state = off;
     }
   } else if (noteAutoLoaderAutomation.state == cancelling) {
@@ -353,6 +310,62 @@ void Robot::automateNoteLoading() {
     }
     intakePivot.Set(-0.1);
   }
+}
+
+std::string Robot::noteAutoLoaderStateString() {
+  if (noteAutoLoaderAutomation.state == off) {
+    return "Off";
+  } else if (noteAutoLoaderAutomation.state == intakeDeploying) {
+    return "Intake Deploying";
+  } else if (noteAutoLoaderAutomation.state == intakingNote) {
+    return "Intaking Note";
+  } else if (noteAutoLoaderAutomation.state == intakeRetracting) {
+    return "Intake Retracting";
+  } else if (noteAutoLoaderAutomation.state == shooterDeploying) {
+    return "ShooterDeploying";
+  } else if (noteAutoLoaderAutomation.state == noteLoading) {
+    return "Note Loading";
+  } else if (noteAutoLoaderAutomation.state == noteLoaded) {
+    return "Note Loaded";
+  } else {
+    return "Cancelling";
+  }
+}
+
+void Robot::initializeShuffleBoard() {
+  autoChooser.SetDefaultOption(position1, position1);
+  autoChooser.AddOption(position2, position2);
+  autoChooser.AddOption(position3, position3);
+  frc::SmartDashboard::PutData("Auto Modes", &autoChooser);
+
+  allianceChooser.SetDefaultOption(redAlliance, redAlliance);
+  allianceChooser.AddOption(blueAlliance, blueAlliance);
+  frc::SmartDashboard::PutData("Alliance Selector", &allianceChooser);
+
+  ShuffleboardTab& tab = Shuffleboard::GetTab("Sensors");
+}
+
+void Robot::populateShuffleBoard() {
+  frc::SmartDashboard::PutNumber("Intake Progress",
+                                 (int)noteAutoLoaderAutomation.state);
+  frc::SmartDashboard::PutString("Intake State",
+                                 Robot::noteAutoLoaderStateString());
+  frc::SmartDashboard::PutBoolean("Move To Shooter",
+                                  currentAuto.state == moveToShooter);
+  frc::SmartDashboard::PutBoolean("Shoot Note 1",
+                                  currentAuto.state == shootNote1);
+  frc::SmartDashboard::PutBoolean("Move to Note",
+                                  currentAuto.state == moveToNote);
+  frc::SmartDashboard::PutBoolean("INtaking Note",
+                                  currentAuto.state == intakingNote);
+  frc::SmartDashboard::PutBoolean("move Back to Shooter",
+                                  currentAuto.state == moveBackToShooter);
+  frc::SmartDashboard::PutBoolean("Shoot Note 2",
+                                  currentAuto.state == shootNote2);
+  frc::SmartDashboard::PutBoolean("Taxi", currentAuto.state == taxi);
+  // pivotLimitSwitchLower.Get()); frc::SmartDashboard::PutBoolean("Pivot
+  // Upper", pivotLimitSwitchUpper.Get()); frc::SmartDashboard::PutNumber("Arm
+  // Position", LTelescopingArm.GetRotorPosition().GetValueAsDouble());
 }
 
 /**

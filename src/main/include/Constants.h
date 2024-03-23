@@ -50,14 +50,14 @@ constexpr double rearLeftChassisAngularOffset = std::numbers::pi;
 constexpr double rearRightChassisAngularOffset = std::numbers::pi / 2;
 
 // SPARK MAX CAN IDs
-constexpr int frontLeftTurningCanId = 1;
-constexpr int frontLeftDrivingCanId = 2;
-constexpr int rearLeftTurningCanId = 3;
-constexpr int rearLeftDrivingCanId = 4;
-constexpr int rearRightTurningCanId = 5;
-constexpr int rearRightDrivingCanId = 6;
-constexpr int frontRightTurningCanId = 7;
-constexpr int frontRightDrivingCanId = 8;
+constexpr int frontLeftTurningCanId = 5;
+constexpr int frontLeftDrivingCanId = 6;
+constexpr int rearLeftTurningCanId = 7;
+constexpr int rearLeftDrivingCanId = 8;
+constexpr int rearRightTurningCanId = 1;
+constexpr int rearRightDrivingCanId = 2;
+constexpr int frontRightTurningCanId = 3;
+constexpr int frontRightDrivingCanId = 4;
 }  // namespace DriveConstants
 
 namespace ShooterConstants {
