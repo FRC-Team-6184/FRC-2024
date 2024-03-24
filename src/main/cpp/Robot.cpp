@@ -173,6 +173,7 @@ void Robot::TeleopPeriodic() {
   }
 
   shooter1.Set(-(shooterController.GetR2Axis() + 1) / 2);
+  pullThrough.Set((shooterController.GetR2Axis() + 1) / 2);
 
   if (!intakeLimitSwitch.Get()) {
     ledColor = LedConstants::YELLOW;
@@ -200,12 +201,12 @@ void Robot::TeleopPeriodic() {
     shooterDir = 0;
   }
 
-  if (shooterDir != 0) {
-    shooter1.Set(shooterDir * 0.5);
-    pullThrough.Set(shooterDir * 0.5);
-  } else {
-    pullThrough.Set(0);
-  }
+  // if (shooterDir != 0) {
+  //   shooter1.Set(shooterDir * 0.5);
+  //   pullThrough.Set(shooterDir * 0.5);
+  // } else {
+  //   pullThrough.Set(0);
+  // }
 
   // if (driverController.GetPOV() == 0 &&
   //     LTelescopingArm.GetRotorPosition().GetValueAsDouble() <
@@ -244,8 +245,15 @@ void Robot::TeleopPeriodic() {
   // pullThrough.Set(pullThroughDirection);
 
   if (shooterController.GetSquareButton()) {
-    shooter1.Set(0.25);
+    shooterIntakingNote = true;
   }
+  if (shooterIntakingNote && !shooterLoadedLimitSwitch.Get()) {
+    shooterIntakingNote = false;
+  } else if (shooterIntakingNote) {
+    shooter1.Set(0.25);
+    pullThrough.Set(-0.25);
+  }
+  frc::SmartDashboard::PutBoolean("Shooter Intaking Note", shooterIntakingNote);
 
   // intakePivot.Set(shooterController.GetRightY() * 0.4);
 }
@@ -381,16 +389,20 @@ void Robot::populateShuffleBoard() {
                                   currentAuto.state == shootNote1);
   frc::SmartDashboard::PutBoolean("Move to Note",
                                   currentAuto.state == moveToNote);
-  frc::SmartDashboard::PutBoolean("INtaking Note",
+  frc::SmartDashboard::PutBoolean("Intaking Note",
                                   currentAuto.state == intakingNoteAutonomous);
   frc::SmartDashboard::PutBoolean("move Back to Shooter",
                                   currentAuto.state == moveBackToShooter);
   frc::SmartDashboard::PutBoolean("Shoot Note 2",
                                   currentAuto.state == shootNote2);
   frc::SmartDashboard::PutBoolean("Taxi", currentAuto.state == taxi);
-  // pivotLimitSwitchLower.Get()); frc::SmartDashboard::PutBoolean("Pivot
-  // Upper", pivotLimitSwitchUpper.Get()); frc::SmartDashboard::PutNumber("Arm
-  // Position", LTelescopingArm.GetRotorPosition().GetValueAsDouble());
+
+  frc::SmartDashboard::PutBoolean("Pivot Switch Lower",
+                                  pivotLimitSwitchLower.Get());
+  frc::SmartDashboard::PutBoolean("Pivot Switch Upper",
+                                  pivotLimitSwitchUpper.Get());
+  frc::SmartDashboard::PutBoolean("shooter Loaded Limit Switch",
+                                  shooterLoadedLimitSwitch.Get());
 }
 
 /**

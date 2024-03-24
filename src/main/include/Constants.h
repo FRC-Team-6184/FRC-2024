@@ -64,7 +64,7 @@ namespace ShooterConstants {
 constexpr int shooter1CanId = 9;
 constexpr int shooter2CanId = 10;
 constexpr int shooterLimitSwitchId = 8;
-constexpr int shooterLoadedLimitSwitchId = 9;  // Temporary value
+constexpr int shooterLoadedLimitSwitchId = 5;
 
 constexpr int shooterPivotCanId = 11;
 
