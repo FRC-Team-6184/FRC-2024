@@ -55,6 +55,8 @@ class Robot : public frc::TimedRobot {
   frc::AddressableLED led{LedConstants::ledLightPort};
   std::array<frc::AddressableLED::LEDData, LedConstants::ledLength> ledBuffer;
 
+  frc::Trajectory trajectory;
+
   void intakeNote();
   void RobotInit() override;
   void RobotPeriodic() override;
@@ -96,7 +98,6 @@ class Robot : public frc::TimedRobot {
     intakeDeploying,
     intakingNote,
     intakeRetracting,
-    shooterDeploying,
     noteLoading,
     noteLoaded,
     cancelling

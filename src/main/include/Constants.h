@@ -63,8 +63,8 @@ constexpr int frontRightDrivingCanId = 4;
 namespace ShooterConstants {
 constexpr int shooter1CanId = 9;
 constexpr int shooter2CanId = 10;
-constexpr int shooterLimitSwitchId = 8;
-constexpr int shooterLoadedLimitSwitchId = 5;
+constexpr int shooterLimitSwitchId = 5;
+constexpr int shooterLoadedLimitSwitchId = 4;
 
 constexpr int shooterPivotCanId = 11;
 
@@ -96,11 +96,11 @@ constexpr Color ORANGE = {255, 120, 0};
 
 namespace IntakeConstants {
 constexpr int intakeWheelCanId = 15;
-constexpr int intakeLimitSwitchId = 4;
+constexpr int intakeLimitSwitchId = 7;
 
 constexpr int intakePivotCanId = 14;
 
-constexpr int pivotLimitSwitchLowerId = 2;
+constexpr int pivotLimitSwitchLowerId = 6;
 constexpr int pivotLimitSwitchUpperId = 3;
 }  // namespace IntakeConstants
 

@@ -9,6 +9,7 @@
 #include <frc/controller/PIDController.h>
 #include <frc/controller/ProfiledPIDController.h>
 #include <frc/smartdashboard/SendableChooser.h>
+#include <frc/trajectory/Trajectory.h>
 #include <frc2/command/Command.h>
 #include <frc2/command/InstantCommand.h>
 #include <frc2/command/PIDCommand.h>
@@ -34,11 +35,10 @@ class RobotContainer {
  public:
   RobotContainer();
 
-  Command* GetAutonomousCommand1(std::string position,
-                                 std::string alliance);
-  Command* GetAutonomousCommand2(std::string position, std::string alliance);
-  Command* GetAutonomousCommand3(std::string position, std::string alliance);
-  Command* GetAutonomousCommand4(std::string position, std::string alliance);
+  Command* GetAutonomousCommand1(double xDir, double yDir, double rotation);
+  Command* GetAutonomousCommand2(double xDir, double yDir, double rotation);
+  Command* GetAutonomousCommand3(double xDir, double yDir, double rotation);
+  Command* GetAutonomousCommand4(double xDir, double yDir, double rotation);
 
   XboxController driverController{OIConstants::driverControllerPort};
 
