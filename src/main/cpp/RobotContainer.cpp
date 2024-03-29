@@ -89,158 +89,21 @@ void RobotContainer::ConfigureButtonBindings() {
 
 Command* RobotContainer::GetAutonomousCommand1(double xDir, double yDir,
                                                double rotation) {
-  // Set up config for trajectory
-  TrajectoryConfig config(AutoConstants::maxSpeed,
-                          AutoConstants::maxAcceleration);
-  // Add kinematics to ensure max speed is actually obeyed
-  config.SetKinematics(driveSubsystem.kDriveKinematics);
-
-  // An example trajectory to follow.  All units in meters.
-  // int multiplier = 1;
-  // if (alliance == "Blue Alliance") {
-  //   multiplier = -1;
-  // }
-
-  frc::Trajectory trajectory1;
-
-  // if (position == "Position 1") {
-  //   trajectory1 = TrajectoryGenerator::GenerateTrajectory(
-  //       // Start at the origin facing the +X direction
-  //       Pose2d{0_m, 0_m, 0_deg},
-  //       // Pass through these two interior waypoints, making an 's' curve
-  //       path
-  //       {},
-
-  //       Pose2d{0_m, 3_m, 0_deg},
-
-  //       // Pass the config
-  //       config);
-  // } else if (position == "Position 2") {
-  //   trajectory1 = TrajectoryGenerator::GenerateTrajectory(
-  //       // Start at the origin facing the +X direction
-  //       Pose2d{0_m, 0_m, 0_deg},
-  //       // Pass through these interior waypoints
-  //       {},
-
-  //       Pose2d{0_m, 0_m, 0_deg},
-  //       // Pass the config
-  //       config);
-  // } else {
-  //   trajectory1 = TrajectoryGenerator::GenerateTrajectory(
-  //       // Start at the origin facing the +X direction
-  //       Pose2d{0_m, 0_m, 0_deg},
-  //       // Pass through these interior waypoints
-  //       {}, Pose2d{-0.16_m, 1.45_m, 0_deg},
-  //       // Pass the config
-  //       config);
-  // }
-
-  // trajectory1 = TrajectoryGenerator::GenerateTrajectory(
-  //     Pose2d{0_m, 0_m, 0_deg}, {}, Pose2d{2_m, 0_m, 0_deg}, config);
-  ProfiledPIDController<radians> thetaController{
-      AutoConstants::pThetaController, 0, 0,
-      AutoConstants::thetaControllerConstraints};
-
-  thetaController.EnableContinuousInput(radian_t{-pi}, radian_t{pi});
-
-  SwerveControllerCommand<4> swerveControllerCommand(
-      trajectory1, [this]() { return driveSubsystem.GetPose(); },
-
-      driveSubsystem.kDriveKinematics,
-
-      PIDController{AutoConstants::pXController, 0, 0},
-      PIDController{AutoConstants::pYController, 0, 0}, thetaController,
-
-      [this](auto moduleStates) {
-        driveSubsystem.SetModuleStates(moduleStates);
-      },
-
-      {&driveSubsystem});
-
-  // Reset odometry to the starting pose of the trajectory.
-  driveSubsystem.ResetOdometry(trajectory1.InitialPose());
-
-  // no auto
   return new InstantCommand(
-      [this]() { driveSubsystem.Drive(0_mps, 0_mps, 0_rad_per_s, true, true); },
+      [this]() {
+        driveSubsystem.Drive(meters_per_second_t{xDir}, 0_mps, 0_rad_per_s,
+                             true, true);
+      },
       {});
 }
 
 Command* RobotContainer::GetAutonomousCommand2(double xDir, double yDir,
                                                double rotation) {
-  // Set up config for trajectory
-  TrajectoryConfig config(AutoConstants::maxSpeed,
-                          AutoConstants::maxAcceleration);
-  // Add kinematics to ensure max speed is actually obeyed
-  config.SetKinematics(driveSubsystem.kDriveKinematics);
+  units::meters_per_second_t xMps = meters_per_second_t{xDir};
 
-  // int multiplier = 1;
-  // if (alliance == "Blue Alliance") {
-  //   multiplier = -1;
-  // }
-
-  frc::Trajectory trajectory2;
-
-  // if (position == "Position 1") {
-  //   trajectory2 = TrajectoryGenerator::GenerateTrajectory(
-  //       // Start at the origin facing the +X direction
-  //       Pose2d{-1_m, -multiplier * 0.657_m, multiplier * 60_deg},
-  //       // Pass through these two interior waypoints, making an 's' curve
-  //       path
-  //       {},
-  //       // End 3 meters straight ahead of where we started, facing forward
-  //       Pose2d{1_m, 0_m, 0_deg},
-  //       // Pass the config
-  //       config);
-  // } else if (position == "Position 2") {
-  //   trajectory2 = TrajectoryGenerator::GenerateTrajectory(
-  //       // Start at the origin facing the +X direction
-  //       Pose2d{0.3_m, 0_m, 0_deg},
-  //       // Pass through these interior waypoints
-  //       {}, Pose2d{1_m, 0_m, 0_deg},
-  //       // Pass the config
-  //       config);
-  // } else {
-  //   trajectory2 = TrajectoryGenerator::GenerateTrajectory(
-  //       // Start at the origin facing the +X direction
-  //       Pose2d{-1_m, multiplier * 0.657_m, -multiplier * 60_deg},
-  //       // Pass through these interior waypoints
-  //       {}, Pose2d{1_m, 0_m, 0_deg},
-  //       // Pass the config
-  //       config);
-  // }
-
-  ProfiledPIDController<radians> thetaController{
-      AutoConstants::pThetaController, 0, 0,
-      AutoConstants::thetaControllerConstraints};
-
-  thetaController.EnableContinuousInput(radian_t{-pi}, radian_t{pi});
-
-  SwerveControllerCommand<4> swerveControllerCommand(
-      trajectory2, [this]() { return driveSubsystem.GetPose(); },
-
-      driveSubsystem.kDriveKinematics,
-
-      PIDController{AutoConstants::pXController, 0, 0},
-      PIDController{AutoConstants::pYController, 0, 0}, thetaController,
-
-      [this](auto moduleStates) {
-        driveSubsystem.SetModuleStates(moduleStates);
-      },
-
-      {&driveSubsystem});
-
-  // Reset odometry to the starting pose of the trajectory.
-  driveSubsystem.ResetOdometry(trajectory2.InitialPose());
-
-  // no auto
-  return new SequentialCommandGroup(
-      move(swerveControllerCommand),
-      InstantCommand(
-          [this]() {
-            driveSubsystem.Drive(0_mps, 0_mps, 0_rad_per_s, false, false);
-          },
-          {}));
+  return new SequentialCommandGroup(InstantCommand(
+      [this]() { driveSubsystem.Drive(xMps, 0_mps, 0_rad_per_s, true, true); },
+      {}));
 }
 
 Command* RobotContainer::GetAutonomousCommand3(double xDir, double yDir,
@@ -330,41 +193,7 @@ Command* RobotContainer::GetAutonomousCommand4(double xDir, double yDir,
   // Add kinematics to ensure max speed is actually obeyed
   config.SetKinematics(driveSubsystem.kDriveKinematics);
 
-  // int multiplier = 1;
-  // if (alliance == "Blue Alliance") {
-  //   multiplier = -1;
-  // }
-
   frc::Trajectory trajectory4;
-
-  // if (position == "Position 1") {
-  //   trajectory4 = TrajectoryGenerator::GenerateTrajectory(
-  //       // Start at the origin facing the +X direction
-  //       Pose2d{-1_m, -multiplier * 0.657_m, multiplier * 60_deg},
-  //       // Pass through these two interior waypoints, making an 's' curve
-  //       path {Translation2d{0_m, multiplier * 3_m}},
-  //       // End 3 meters straight ahead of where we started, facing forward
-  //       Pose2d{4_m, multiplier * 3_m, 0_deg},
-  //       // Pass the config
-  //       config);
-  // } else if (position == "Position 2") {
-  //   trajectory4 = TrajectoryGenerator::GenerateTrajectory(
-  //       // Start at the origin facing the +X direction
-  //       Pose2d{-0.38_m, 0_m, 0_deg},
-  //       // Pass through these interior waypoints
-  //       {Translation2d{1_m, -multiplier * 0.5_m}},
-  //       Pose2d{4_m, -multiplier * 0.5_m, 0_deg},
-  //       // Pass the config
-  //       config);
-  // } else {
-  //   trajectory4 = TrajectoryGenerator::GenerateTrajectory(
-  //       // Start at the origin facing the +X direction
-  //       Pose2d{-1_m, multiplier * 0.657_m, -multiplier * 60_deg},
-  //       // Pass through these interior waypoints
-  //       {Translation2d{1_m, 0_m}}, Pose2d{4_m, 0_m, 0_deg},
-  //       // Pass the config
-  //       config);
-  // }
 
   ProfiledPIDController<radians> thetaController{
       AutoConstants::pThetaController, 0, 0,
@@ -372,29 +201,13 @@ Command* RobotContainer::GetAutonomousCommand4(double xDir, double yDir,
 
   thetaController.EnableContinuousInput(radian_t{-pi}, radian_t{pi});
 
-  SwerveControllerCommand<4> swerveControllerCommand(
-      trajectory4, [this]() { return driveSubsystem.GetPose(); },
-
-      driveSubsystem.kDriveKinematics,
-
-      PIDController{AutoConstants::pXController, 0, 0},
-      PIDController{AutoConstants::pYController, 0, 0}, thetaController,
-
-      [this](auto moduleStates) {
-        driveSubsystem.SetModuleStates(moduleStates);
-      },
-
-      {&driveSubsystem});
-
   // Reset odometry to the starting pose of the trajectory.
   driveSubsystem.ResetOdometry(trajectory4.InitialPose());
 
   // no auto
-  return new SequentialCommandGroup(
-      move(swerveControllerCommand),
-      InstantCommand(
-          [this]() {
-            driveSubsystem.Drive(0_mps, 0_mps, 0_rad_per_s, false, false);
-          },
-          {}));
+  return new InstantCommand(
+      [this]() {
+        driveSubsystem.Drive(0_mps, 0_mps, 0_rad_per_s, false, false);
+      },
+      {});
 }
