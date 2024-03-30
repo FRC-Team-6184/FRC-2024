@@ -66,6 +66,13 @@ RobotContainer::RobotContainer() {
         } else if (driverController.GetRightBumper()) {
           speedMultiplier = speedMode::TURTLE_SPEED;
         }
+
+        double dirAngle =
+            atan(driverController.GetLeftY() / driverController.GetLeftX()) -
+            startAngle;
+        double yDir = sin(dirAngle);
+        double xDir = cos(dirAngle);
+
         driveSubsystem.Drive(
             meters_per_second_t{
                 ApplyDeadband(-driverController.GetLeftY() * speedMultiplier,
@@ -81,133 +88,96 @@ RobotContainer::RobotContainer() {
       {&driveSubsystem}));
 }
 
+void SetStartAngle(double angle) {}
+
 void RobotContainer::ConfigureButtonBindings() {
   // JoystickButton(&driverController, XboxController::Button::kRightBumper)
   //.WhileTrue(new RunCommand([this] { driveSubsystem.SetX(); },
   //{&driveSubsystem}));
 }
 
+Command* RobotContainer::SideTaxi1(int alliance) {
+  return new SequentialCommandGroup(InstantCommand(
+      [this]() {
+        driveSubsystem.Drive(0.965_mps, 0_mps, 0_rad_per_s, true, true);
+      },
+      {}));
+}
+Command* RobotContainer::SideTaxi1Part2(int alliance) {
+  if (alliance == 1) {
+    return new SequentialCommandGroup(InstantCommand(
+        [this]() {
+          driveSubsystem.Drive(0.4_mps, -0.693_mps, 0_rad_per_s, true, true);
+        },
+        {}));
+  } else {
+    return new SequentialCommandGroup(InstantCommand(
+        [this]() {
+          driveSubsystem.Drive(0.4_mps, 0.693_mps, 0_rad_per_s, true, true);
+        },
+        {}));
+  }
+}
+Command* RobotContainer::GoToNote(int alliance) {
+  return new SequentialCommandGroup(InstantCommand(
+      [this]() { driveSubsystem.Drive(1_mps, 0_mps, 0_rad_per_s, true, true); },
+      {}));
+}
+Command* RobotContainer::ReturnToSpeaker(int alliance) {
+  return new SequentialCommandGroup(InstantCommand(
+      [this]() {
+        driveSubsystem.Drive(-1_mps, 0_mps, 0_rad_per_s, true, true);
+      },
+      {}));
+}
+Command* RobotContainer::MiddleTaxi(int alliance) {
+  if (alliance == 1) {
+    return new SequentialCommandGroup(InstantCommand(
+        [this]() {
+          driveSubsystem.Drive(0_mps, -1_mps, 0_rad_per_s, true, true);
+        },
+        {}));
+  } else {
+    return new SequentialCommandGroup(InstantCommand(
+        [this]() {
+          driveSubsystem.Drive(0_mps, 1_mps, 0_rad_per_s, true, true);
+        },
+        {}));
+  }
+}
+Command* RobotContainer::MiddleTaxiPart2(int alliance) {
+  return new SequentialCommandGroup(InstantCommand(
+      [this]() {
+        driveSubsystem.Drive(0.86_mps, 0_mps, 0_rad_per_s, true, true);
+      },
+      {}));
+}
+Command* RobotContainer::SideTaxi2(int alliance) {
+  return new SequentialCommandGroup(InstantCommand(
+      [this]() {
+        driveSubsystem.Drive(0.19_mps, 0_mps, 0_rad_per_s, true, true);
+      },
+      {}));
+}
+Command* RobotContainer::SideTaxi2Part2(int alliance) {
+  if (alliance == 1) {
+    return new SequentialCommandGroup(InstantCommand(
+        [this]() {
+          driveSubsystem.Drive(0.432_mps, 0.748_mps, 0_rad_per_s, true, true);
+        },
+        {}));
+  } else {
+    return new SequentialCommandGroup(InstantCommand(
+        [this]() {
+          driveSubsystem.Drive(0.432_mps, -0.748_mps, 0_rad_per_s, true, true);
+        },
+        {}));
+  }
+}
+
 Command* RobotContainer::GetAutonomousCommand1(double xDir, double yDir,
                                                double rotation) {
   return new InstantCommand(
-      [this]() {
-        driveSubsystem.Drive(meters_per_second_t{xDir}, 0_mps, 0_rad_per_s,
-                             true, true);
-      },
-      {});
-}
-
-Command* RobotContainer::GetAutonomousCommand2(double xDir, double yDir,
-                                               double rotation) {
-  units::meters_per_second_t xMps = meters_per_second_t{xDir};
-
-  return new SequentialCommandGroup(InstantCommand(
-      [this]() { driveSubsystem.Drive(xMps, 0_mps, 0_rad_per_s, true, true); },
-      {}));
-}
-
-Command* RobotContainer::GetAutonomousCommand3(double xDir, double yDir,
-                                               double rotation) {
-  // Set up config for trajectory
-  TrajectoryConfig config(AutoConstants::maxSpeed,
-                          AutoConstants::maxAcceleration);
-  // Add kinematics to ensure max speed is actually obeyed
-  config.SetKinematics(driveSubsystem.kDriveKinematics);
-
-  // An example trajectory to follow.  All units in meters.
-
-  // int multiplier = 1;
-  // if (alliance == "Blue Alliance") {
-  //   multiplier = -1;
-  // }
-
-  frc::Trajectory trajectory3;
-
-  // if (position == "Position 1") {
-  //   trajectory3 = TrajectoryGenerator::GenerateTrajectory(
-  //       // Start at the origin facing the +X direction
-  //       Pose2d{1_m, 0_m, 0_deg},
-  //       // Pass through these two interior waypoints, making an 's' curve
-  //       path
-  //       {},
-  //       // End 3 meters straight ahead of where we started, facing forward
-  //       Pose2d{1_m, 0_m, 90_deg},
-  //       // Pass the config
-  //       config);
-  // } else if (position == "Position 2") {
-  //   trajectory3 = TrajectoryGenerator::GenerateTrajectory(
-  //       // Start at the origin facing the +X direction
-  //       Pose2d{1_m, 0_m, 0_deg},
-  //       // Pass through these interior waypoints
-  //       {}, Pose2d{-0.38_m, 0_m, 0_deg},
-  //       // Pass the config
-  //       config);
-  // } else {
-  //   trajectory3 = TrajectoryGenerator::GenerateTrajectory(
-  //       // Start at the origin facing the +X direction
-  //       Pose2d{1_m, 0_m, 0_deg},
-  //       // Pass through these interior waypoints
-  //       {}, Pose2d{-1_m, multiplier * 0.657_m, -multiplier * 60_deg},
-  //       // Pass the config
-  //       config);
-  // }
-
-  ProfiledPIDController<radians> thetaController{
-      AutoConstants::pThetaController, 0, 0,
-      AutoConstants::thetaControllerConstraints};
-
-  thetaController.EnableContinuousInput(radian_t{-pi}, radian_t{pi});
-
-  SwerveControllerCommand<4> swerveControllerCommand(
-      trajectory3, [this]() { return driveSubsystem.GetPose(); },
-
-      driveSubsystem.kDriveKinematics,
-
-      PIDController{AutoConstants::pXController, 0, 0},
-      PIDController{AutoConstants::pYController, 0, 0}, thetaController,
-
-      [this](auto moduleStates) {
-        driveSubsystem.SetModuleStates(moduleStates);
-      },
-
-      {&driveSubsystem});
-
-  // Reset odometry to the starting pose of the trajectory.
-  driveSubsystem.ResetOdometry(trajectory3.InitialPose());
-
-  // no auto
-  return new SequentialCommandGroup(
-      move(swerveControllerCommand),
-      InstantCommand(
-          [this]() {
-            driveSubsystem.Drive(0_mps, 0_mps, 0_rad_per_s, false, false);
-          },
-          {}));
-}
-
-Command* RobotContainer::GetAutonomousCommand4(double xDir, double yDir,
-                                               double rotation) {
-  // Set up config for trajectory
-  TrajectoryConfig config(AutoConstants::maxSpeed,
-                          AutoConstants::maxAcceleration);
-  // Add kinematics to ensure max speed is actually obeyed
-  config.SetKinematics(driveSubsystem.kDriveKinematics);
-
-  frc::Trajectory trajectory4;
-
-  ProfiledPIDController<radians> thetaController{
-      AutoConstants::pThetaController, 0, 0,
-      AutoConstants::thetaControllerConstraints};
-
-  thetaController.EnableContinuousInput(radian_t{-pi}, radian_t{pi});
-
-  // Reset odometry to the starting pose of the trajectory.
-  driveSubsystem.ResetOdometry(trajectory4.InitialPose());
-
-  // no auto
-  return new InstantCommand(
-      [this]() {
-        driveSubsystem.Drive(0_mps, 0_mps, 0_rad_per_s, false, false);
-      },
+      [this]() { driveSubsystem.Drive(0_mps, 0_mps, 0_rad_per_s, true, true); },
       {});
 }

@@ -36,9 +36,17 @@ class RobotContainer {
   RobotContainer();
 
   Command* GetAutonomousCommand1(double xDir, double yDir, double rotation);
-  Command* GetAutonomousCommand2(double xDir, double yDir, double rotation);
-  Command* GetAutonomousCommand3(double xDir, double yDir, double rotation);
-  Command* GetAutonomousCommand4(double xDir, double yDir, double rotation);
+  Command* SideTaxi1(int alliance);
+  Command* SideTaxi1Part2(int alliance);
+  Command* GoToNote(int alliance);
+  Command* ReturnToSpeaker(int alliance);
+  Command* MiddleTaxi(int alliance);
+  Command* MiddleTaxiPart2(int alliance);
+  Command* SideTaxi2(int alliance);
+  Command* SideTaxi2Part2(int alliance);
+
+  void SetStartAngle(double angle);
+  double startAngle = 0;
 
   XboxController driverController{OIConstants::driverControllerPort};
 

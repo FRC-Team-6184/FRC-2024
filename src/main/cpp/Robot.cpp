@@ -42,8 +42,6 @@ void Robot::RobotInit() {
   noteAutoLoaderAutomation.state = off;
 
   initializeShuffleBoard();
-
-  
 }
 
 /**
@@ -78,32 +76,31 @@ void Robot::DisabledPeriodic() {}
  * RobotContainer} class.
  */
 void Robot::AutonomousInit() {
-  int multiplier = 1;
+  int alliance = 1;
   noteAutoLoaderAutomation.state = off;
 
+  autoTime = Timer::GetFPGATimestamp();
+
   if (allianceChooser.GetSelected() == "Red Alliance") {
-    multiplier = 1;
-  }
-  else {
-    multiplier = -1;
+    alliance = 1;
+  } else {
+    alliance = -1;
   }
 
   if (autoChooser.GetSelected() == position1) {
     currentAuto.twoNote = false;
-    autonomousCommand1 = container.SideTaxi1(multiplier);
-    autonomousCommand2 = container.SideTaxi1Part2(multiplier);
-  }
-  else if (autoChooser.GetSelected() == position2) {
+    autonomousCommand1 = container.SideTaxi1(alliance);
+    autonomousCommand2 = container.SideTaxi1Part2(alliance);
+  } else if (autoChooser.GetSelected() == position2) {
     currentAuto.twoNote = true;
-    autonomousCommand1 = container.GoToNote(multiplier);
-    autonomousCommand2 = container.ReturnToSpeaker(multiplier);
-    autonomousCommand3 = container.MiddleTaxi(multiplier);
-    autonomousCommand4 = container.MiddleTaxiPart2(multiplier);
-  }
-  else {
+    autonomousCommand1 = container.GoToNote(alliance);
+    autonomousCommand2 = container.ReturnToSpeaker(alliance);
+    autonomousCommand3 = container.MiddleTaxi(alliance);
+    autonomousCommand4 = container.MiddleTaxiPart2(alliance);
+  } else {
     currentAuto.twoNote = false;
-    autonomousCommand1 = container.SideTaxi2(multiplier);
-    autonomousCommand2 = container.SideTaxi2Part2(multiplier);
+    autonomousCommand1 = container.SideTaxi2(alliance);
+    autonomousCommand2 = container.SideTaxi2Part2(alliance);
   }
 
   currentAuto.state = autoOff;
@@ -114,36 +111,33 @@ void Robot::AutonomousPeriodic() {
   double timeDiff = static_cast<double>(Timer::GetFPGATimestamp() - autoTime);
 
   if (currentAuto.twoNote) {
-    if (timeDiff > 14) {
+    if (timeDiff > 15) {
+      currentAuto.state = autoOff;
+    }
+    if (timeDiff > 10) {
       currentAuto.state = runningAuto4;
     }
-    if (timeDiff > 12) {
+    if (timeDiff > 9) {
       currentAuto.state = runningAuto3;
-    }
-    else if (timeDiff > 10) {
+    } else if (timeDiff > 8) {
       currentAuto.state = shootingNote;
-    }
-    else if (timeDiff > 8) {
+    } else if (timeDiff > 7) {
       currentAuto.state = runningAuto2;
-    }
-    else if (timeDiff > 4) {
+    } else if (timeDiff > 2) {
       currentAuto.state = intakingNoteAutonomous;
-    }
-    else if (timeDiff > 2) {
+    } else if (timeDiff > 1) {
       currentAuto.state = runningAuto1;
-    }
-    else {
+    } else {
       currentAuto.state = shootingNote;
     }
-  }
-  else {
-    if (timeDiff > 4) {
+  } else {
+    if (timeDiff > 11) {
+      currentAuto.state = autoOff;
+    } else if (timeDiff > 6) {
       currentAuto.state = runningAuto2;
-    }
-    else if (timeDiff > 2) {
+    } else if (timeDiff > 2) {
       currentAuto.state = runningAuto1;
-    }
-    else {
+    } else {
       currentAuto.state = shootingNote;
     }
   }
@@ -151,8 +145,7 @@ void Robot::AutonomousPeriodic() {
   if (currentAuto.state == shootingNote) {
     shooter1.Set(1);
     pullThrough.Set(1);
-  }
-  else {
+  } else {
     shooter1.Set(0);
     pullThrough.Set(0);
   }
@@ -160,27 +153,21 @@ void Robot::AutonomousPeriodic() {
   if (currentAuto.state != currentAuto.lastTickState) {
     if (currentAuto.lastTickState == runningAuto1) {
       autonomousCommand1->Cancel();
-    }
-    else if (currentAuto.lastTickState == runningAuto2) {
+    } else if (currentAuto.lastTickState == runningAuto2) {
       autonomousCommand2->Cancel();
-    }
-    else if (currentAuto.lastTickState == runningAuto3) {
+    } else if (currentAuto.lastTickState == runningAuto3) {
       autonomousCommand3->Cancel();
-    }
-    else if (currentAuto.lastTickState == runningAuto4) {
+    } else if (currentAuto.lastTickState == runningAuto4) {
       autonomousCommand4->Cancel();
     }
 
     if (currentAuto.state == runningAuto1) {
       autonomousCommand1->Schedule();
-    }
-    else if (currentAuto.state == runningAuto2) {
+    } else if (currentAuto.state == runningAuto2) {
       autonomousCommand2->Schedule();
-    }
-    else if (currentAuto.state == runningAuto3) {
+    } else if (currentAuto.state == runningAuto3) {
       autonomousCommand3->Schedule();
-    }
-    else if (currentAuto.state == runningAuto4) {
+    } else if (currentAuto.state == runningAuto4) {
       autonomousCommand4->Schedule();
     }
   }
@@ -196,17 +183,13 @@ void Robot::TeleopInit() {
   // this line or comment it out.
   if (currentAuto.lastTickState == runningAuto1) {
     autonomousCommand1->Cancel();
-  }
-  else if (currentAuto.lastTickState == runningAuto2) {
+  } else if (currentAuto.lastTickState == runningAuto2) {
     autonomousCommand2->Cancel();
-  }
-  else if (currentAuto.lastTickState == runningAuto3) {
+  } else if (currentAuto.lastTickState == runningAuto3) {
     autonomousCommand3->Cancel();
-  }
-  else if (currentAuto.lastTickState == runningAuto4) {
+  } else if (currentAuto.lastTickState == runningAuto4) {
     autonomousCommand4->Cancel();
   }
-
 
   shooter1.Set(0);
   shooterDir = 0;
@@ -407,19 +390,18 @@ void Robot::populateShuffleBoard() {
                                  (int)noteAutoLoaderAutomation.state);
   frc::SmartDashboard::PutString("Intake State",
                                  Robot::noteAutoLoaderStateString());
-  frc::SmartDashboard::PutBoolean("Move To Shooter",
-                                  currentAuto.state == moveToShooter);
-  frc::SmartDashboard::PutBoolean("Shoot Note 1",
-                                  currentAuto.state == shootNote1);
-  frc::SmartDashboard::PutBoolean("Move to Note",
-                                  currentAuto.state == moveToNote);
-  frc::SmartDashboard::PutBoolean("Intaking Note",
+  frc::SmartDashboard::PutBoolean("runnint auto 1",
+                                  currentAuto.state == runningAuto1);
+  frc::SmartDashboard::PutBoolean("running auto 2",
+                                  currentAuto.state == runningAuto2);
+  frc::SmartDashboard::PutBoolean("running auto 3",
+                                  currentAuto.state == runningAuto3);
+  frc::SmartDashboard::PutBoolean("running auto 4",
+                                  currentAuto.state == runningAuto4);
+  frc::SmartDashboard::PutBoolean("shooting note",
+                                  currentAuto.state == shootingNote);
+  frc::SmartDashboard::PutBoolean("intaking note autonomous",
                                   currentAuto.state == intakingNoteAutonomous);
-  frc::SmartDashboard::PutBoolean("move Back to Shooter",
-                                  currentAuto.state == moveBackToShooter);
-  frc::SmartDashboard::PutBoolean("Shoot Note 2",
-                                  currentAuto.state == shootNote2);
-  frc::SmartDashboard::PutBoolean("Taxi", currentAuto.state == taxi);
 
   frc::SmartDashboard::PutBoolean("Pivot Switch Lower",
                                   pivotLimitSwitchLower.Get());

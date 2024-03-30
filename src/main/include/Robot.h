@@ -76,19 +76,19 @@ class Robot : public frc::TimedRobot {
 
   enum autoStates {
     autoOff,
-    moveToShooter,
-    shootNote1,
-    moveToNote,
+    runningAuto1,
+    runningAuto2,
+    runningAuto3,
+    runningAuto4,
     intakingNoteAutonomous,
-    moveBackToShooter,
-    shootNote2,
+    shootingNote,
     taxi
   };
 
   struct {
     autoStates state = autoOff;
     autoStates lastTickState = autoOff;
-    bool stateChange = true;
+    bool twoNote = false;
   } currentAuto;
 
   Color ledColor;
