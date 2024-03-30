@@ -28,13 +28,10 @@ void Robot::RobotInit() {
   RTelescopingArm.SetControl(Follower{LTelescopingArm.GetDeviceID(), true});
   shooter2.SetControl(Follower{shooter1.GetDeviceID(), false});
 
-  LTelescopingArm.SetNeutralMode(
-      ctre::phoenix6::signals::NeutralModeValue::Brake);
-  RTelescopingArm.SetNeutralMode(
-      ctre::phoenix6::signals::NeutralModeValue::Brake);
+  LTelescopingArm.SetNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Brake);
+  RTelescopingArm.SetNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Brake);
 
-  noteAutoLoaderAutomation.telescopingArmOffset =
-      LTelescopingArm.GetRotorPosition().GetValueAsDouble();
+  noteAutoLoaderAutomation.telescopingArmOffset = LTelescopingArm.GetRotorPosition().GetValueAsDouble();
 
   shooter1.Set(0);
   pullThrough.Set(0);
@@ -63,10 +60,8 @@ void Robot::RobotPeriodic() {
  * robot is disabled.
  */
 void Robot::DisabledInit() {
-  LTelescopingArm.SetNeutralMode(
-      ctre::phoenix6::signals::NeutralModeValue::Coast);
-  RTelescopingArm.SetNeutralMode(
-      ctre::phoenix6::signals::NeutralModeValue::Coast);
+  LTelescopingArm.SetNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Coast);
+  RTelescopingArm.SetNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Coast);
 }
 
 void Robot::DisabledPeriodic() {}
@@ -120,8 +115,7 @@ void Robot::TeleopInit() {
  * This function is called periodically during operator control.
  */
 void Robot::TeleopPeriodic() {
-  if (shooterController.GetPOV() == 0 &&
-      noteAutoLoaderAutomation.state == off) {
+  if (shooterController.GetPOV() == 0 && noteAutoLoaderAutomation.state == off) {
     noteAutoLoaderAutomation.state = intakeDeploying;
   }
 
@@ -224,42 +218,44 @@ void Robot::automateNoteLoading() {
   if (noteAutoLoaderAutomation.state == intakeDeploying) {
     if (!pivotLimitSwitchLower.Get()) {
       noteAutoLoaderAutomation.state = intakingNote;
-      noteAutoLoaderAutomation.intakeDeployStartTime =
-          Timer::GetFPGATimestamp();
+      noteAutoLoaderAutomation.intakeDeployStartTime = Timer::GetFPGATimestamp();
       intakePivot.Set(0);
       return;
     }
+    intakeWheel.Set(1.0);
     intakePivot.Set(0.15);
   } else if (noteAutoLoaderAutomation.state == intakingNote) {
     if (!intakeLimitSwitch.Get()) {
       noteAutoLoaderAutomation.state = intakeRetracting;
-      intakeWheel.Set(0.4);
+      intakeWheel.Set(0);
       return;
-    } else if (static_cast<double>(
-                   Timer::GetFPGATimestamp() -
-                   noteAutoLoaderAutomation.intakeDeployStartTime) > 10) {
+    } else if (static_cast<double>(Timer::GetFPGATimestamp() - noteAutoLoaderAutomation.intakeDeployStartTime) > 10) {
       noteAutoLoaderAutomation.state == cancelling;
+      return;
+    } else if (shooterController.GetPOV() == 0) {
+      noteAutoLoaderAutomation.state = intakeRetracting;
       intakeWheel.Set(0);
       return;
     }
-    intakeWheel.Set(0.7);
-    pullThrough.Set(1);
+    intakeWheel.Set(1.0);
+    pullThrough.Set(1.0);
+
   } else if (noteAutoLoaderAutomation.state == intakeRetracting) {
     if (!pivotLimitSwitchUpper.Get()) {
       noteAutoLoaderAutomation.state = noteLoading;
       intakePivot.Set(0);
-      intakeWheel.Set(0);
       return;
     }
     intakePivot.Set(-0.2);
-    pullThrough.Set(1);
+    pullThrough.Set(1.0);
   } else if (noteAutoLoaderAutomation.state == noteLoading) {
     if (!shooterLoadedLimitSwitch.Get()) {
       noteAutoLoaderAutomation.state = noteLoaded;
       pullThrough.Set(0);
+      intakeWheel.Set(0);
     }
     pullThrough.Set(1);
-    intakeWheel.Set(-0.5);
+    intakeWheel.Set(-1.0);
   } else if (noteAutoLoaderAutomation.state == noteLoaded) {
     if (shooterLoadedLimitSwitch.Get()) {
       noteAutoLoaderAutomation.state = off;
@@ -268,6 +264,8 @@ void Robot::automateNoteLoading() {
     if (pivotLimitSwitchUpper.Get()) {
       noteAutoLoaderAutomation.state = off;
       intakePivot.Set(0);
+      intakeWheel.Set(0);
+      pullThrough.Set(0);
       return;
     }
     intakePivot.Set(-0.1);
@@ -306,32 +304,20 @@ void Robot::initializeShuffleBoard() {
 }
 
 void Robot::populateShuffleBoard() {
-  frc::SmartDashboard::PutNumber("Intake Progress",
-                                 (int)noteAutoLoaderAutomation.state);
-  frc::SmartDashboard::PutString("Intake State",
-                                 Robot::noteAutoLoaderStateString());
-  frc::SmartDashboard::PutBoolean("Move To Shooter",
-                                  currentAuto.state == moveToShooter);
-  frc::SmartDashboard::PutBoolean("Shoot Note 1",
-                                  currentAuto.state == shootNote1);
-  frc::SmartDashboard::PutBoolean("Move to Note",
-                                  currentAuto.state == moveToNote);
-  frc::SmartDashboard::PutBoolean("Intaking Note",
-                                  currentAuto.state == intakingNoteAutonomous);
-  frc::SmartDashboard::PutBoolean("move Back to Shooter",
-                                  currentAuto.state == moveBackToShooter);
-  frc::SmartDashboard::PutBoolean("Shoot Note 2",
-                                  currentAuto.state == shootNote2);
+  frc::SmartDashboard::PutNumber("Intake Progress", (int)noteAutoLoaderAutomation.state);
+  frc::SmartDashboard::PutString("Intake State", Robot::noteAutoLoaderStateString());
+  frc::SmartDashboard::PutBoolean("Move To Shooter", currentAuto.state == moveToShooter);
+  frc::SmartDashboard::PutBoolean("Shoot Note 1", currentAuto.state == shootNote1);
+  frc::SmartDashboard::PutBoolean("Move to Note", currentAuto.state == moveToNote);
+  frc::SmartDashboard::PutBoolean("Intaking Note", currentAuto.state == intakingNoteAutonomous);
+  frc::SmartDashboard::PutBoolean("move Back to Shooter", currentAuto.state == moveBackToShooter);
+  frc::SmartDashboard::PutBoolean("Shoot Note 2", currentAuto.state == shootNote2);
   frc::SmartDashboard::PutBoolean("Taxi", currentAuto.state == taxi);
 
-  frc::SmartDashboard::PutBoolean("Pivot Switch Lower",
-                                  pivotLimitSwitchLower.Get());
-  frc::SmartDashboard::PutBoolean("Pivot Switch Upper",
-                                  pivotLimitSwitchUpper.Get());
-  frc::SmartDashboard::PutBoolean("shooter Loaded Limit Switch",
-                                  shooterLoadedLimitSwitch.Get());
-  frc::SmartDashboard::PutBoolean("Intake Note Limit Switch",
-                                  intakeLimitSwitch.Get());
+  frc::SmartDashboard::PutBoolean("Pivot Switch Lower", pivotLimitSwitchLower.Get());
+  frc::SmartDashboard::PutBoolean("Pivot Switch Upper", pivotLimitSwitchUpper.Get());
+  frc::SmartDashboard::PutBoolean("shooter Loaded Limit Switch", shooterLoadedLimitSwitch.Get());
+  frc::SmartDashboard::PutBoolean("Intake Note Limit Switch", intakeLimitSwitch.Get());
   frc::SmartDashboard::PutBoolean("shooter head", shooterLimitSwitch.Get());
 }
 
