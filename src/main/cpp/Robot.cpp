@@ -42,6 +42,8 @@ void Robot::RobotInit() {
   noteAutoLoaderAutomation.state = off;
 
   initializeShuffleBoard();
+
+  
 }
 
 /**
@@ -78,27 +80,112 @@ void Robot::DisabledPeriodic() {}
 void Robot::AutonomousInit() {
   int multiplier = 1;
   noteAutoLoaderAutomation.state = off;
-  std::string selection = autoChooser.GetSelected();
-  // if (autoChooser.GetSelected() == leftAuto) {
-  //   multiplier = -1;
-  // }
-  // autoTime = Timer::GetFPGATimestamp();
-  // currentAuto.state = moveToShooter;
-  // autonomousCommand1 = container.GetAutonomousCommand1();
-  // autonomousCommand2 = container.GetAutonomousCommand2(
-  //     autoChooser.GetSelected(), allianceChooser.GetSelected());
-  // autoTime = Timer::GetFPGATimestamp();
-  // shooter1.Set(0);
-  // pullThrough.Set(0);
-  // autonomousCommand1->Schedule();
+
+  if (allianceChooser.GetSelected() == "Red Alliance") {
+    multiplier = 1;
+  }
+  else {
+    multiplier = -1;
+  }
+
+  if (autoChooser.GetSelected() == position1) {
+    currentAuto.twoNote = false;
+    autonomousCommand1 = container.SideTaxi1(multiplier);
+    autonomousCommand2 = container.SideTaxi1Part2(multiplier);
+  }
+  else if (autoChooser.GetSelected() == position2) {
+    currentAuto.twoNote = true;
+    autonomousCommand1 = container.GoToNote(multiplier);
+    autonomousCommand2 = container.ReturnToSpeaker(multiplier);
+    autonomousCommand3 = container.MiddleTaxi(multiplier);
+    autonomousCommand4 = container.MiddleTaxiPart2(multiplier);
+  }
+  else {
+    currentAuto.twoNote = false;
+    autonomousCommand1 = container.SideTaxi2(multiplier);
+    autonomousCommand2 = container.SideTaxi2Part2(multiplier);
+  }
+
+  currentAuto.state = autoOff;
+  currentAuto.lastTickState = autoOff;
 }
 
 void Robot::AutonomousPeriodic() {
   double timeDiff = static_cast<double>(Timer::GetFPGATimestamp() - autoTime);
 
-  if (timeDiff > 2) {
-  } else if (timeDiff > 4) {
+  if (currentAuto.twoNote) {
+    if (timeDiff > 14) {
+      currentAuto.state = runningAuto4;
+    }
+    if (timeDiff > 12) {
+      currentAuto.state = runningAuto3;
+    }
+    else if (timeDiff > 10) {
+      currentAuto.state = shootingNote;
+    }
+    else if (timeDiff > 8) {
+      currentAuto.state = runningAuto2;
+    }
+    else if (timeDiff > 4) {
+      currentAuto.state = intakingNoteAutonomous;
+    }
+    else if (timeDiff > 2) {
+      currentAuto.state = runningAuto1;
+    }
+    else {
+      currentAuto.state = shootingNote;
+    }
   }
+  else {
+    if (timeDiff > 4) {
+      currentAuto.state = runningAuto2;
+    }
+    else if (timeDiff > 2) {
+      currentAuto.state = runningAuto1;
+    }
+    else {
+      currentAuto.state = shootingNote;
+    }
+  }
+
+  if (currentAuto.state == shootingNote) {
+    shooter1.Set(1);
+    pullThrough.Set(1);
+  }
+  else {
+    shooter1.Set(0);
+    pullThrough.Set(0);
+  }
+
+  if (currentAuto.state != currentAuto.lastTickState) {
+    if (currentAuto.lastTickState == runningAuto1) {
+      autonomousCommand1->Cancel();
+    }
+    else if (currentAuto.lastTickState == runningAuto2) {
+      autonomousCommand2->Cancel();
+    }
+    else if (currentAuto.lastTickState == runningAuto3) {
+      autonomousCommand3->Cancel();
+    }
+    else if (currentAuto.lastTickState == runningAuto4) {
+      autonomousCommand4->Cancel();
+    }
+
+    if (currentAuto.state == runningAuto1) {
+      autonomousCommand1->Schedule();
+    }
+    else if (currentAuto.state == runningAuto2) {
+      autonomousCommand2->Schedule();
+    }
+    else if (currentAuto.state == runningAuto3) {
+      autonomousCommand3->Schedule();
+    }
+    else if (currentAuto.state == runningAuto4) {
+      autonomousCommand4->Schedule();
+    }
+  }
+
+  currentAuto.lastTickState = currentAuto.state;
 }
 
 void Robot::TeleopInit() {
@@ -107,10 +194,20 @@ void Robot::TeleopInit() {
   // teleop starts running. If you want the autonomous to
   // continue until interrupted by another command, remove
   // this line or comment it out.
-  // if (autonomousCommand4 != nullptr) {
-  //   autonomousCommand4->Cancel();
-  //   autonomousCommand4 = nullptr;
-  // }
+  if (currentAuto.lastTickState == runningAuto1) {
+    autonomousCommand1->Cancel();
+  }
+  else if (currentAuto.lastTickState == runningAuto2) {
+    autonomousCommand2->Cancel();
+  }
+  else if (currentAuto.lastTickState == runningAuto3) {
+    autonomousCommand3->Cancel();
+  }
+  else if (currentAuto.lastTickState == runningAuto4) {
+    autonomousCommand4->Cancel();
+  }
+
+
   shooter1.Set(0);
   shooterDir = 0;
   shooterIntakingNote = false;
