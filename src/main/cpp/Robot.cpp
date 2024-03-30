@@ -330,7 +330,7 @@ void Robot::automateNoteLoading() {
       pullThrough.Set(0);
       intakeWheel.Set(0);
     }
-    pullThrough.Set(1);
+    pullThrough.Set(1.0);
     intakeWheel.Set(-1.0);
   } else if (noteAutoLoaderAutomation.state == noteLoaded) {
     if (shooterLoadedLimitSwitch.Get()) {
@@ -393,9 +393,9 @@ void Robot::populateShuffleBoard() {
 
   SmartDashboard::PutBoolean("Pivot Switch Lower", pivotLimitSwitchLower.Get());
   SmartDashboard::PutBoolean("Pivot Switch Upper", pivotLimitSwitchUpper.Get());
-  SmartDashboard::PutBoolean("shooter Loaded Limit Switch", shooterLoadedLimitSwitch.Get());
+  SmartDashboard::PutBoolean("Shooter Loaded Limit Switch", shooterLoadedLimitSwitch.Get());
   SmartDashboard::PutBoolean("Intake Note Limit Switch", intakeLimitSwitch.Get());
-  SmartDashboard::PutBoolean("shooter head", shooterLimitSwitch.Get());
+  SmartDashboard::PutBoolean("Shooter Head", shooterLimitSwitch.Get());
 
   SmartDashboard::PutNumber("Intake Pivot", intakePivot.Get());
   SmartDashboard::PutNumber("Intake Wheel", intakeWheel.Get());
