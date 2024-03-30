@@ -27,27 +27,20 @@ class Robot : public frc::TimedRobot {
   TalonFX shooter1{ShooterConstants::shooter1CanId};
   TalonFX shooter2{ShooterConstants::shooter2CanId};
   frc::DigitalInput shooterLimitSwitch{ShooterConstants::shooterLimitSwitchId};
-  frc::DigitalInput shooterLoadedLimitSwitch{
-      ShooterConstants::shooterLoadedLimitSwitchId};
+  frc::DigitalInput shooterLoadedLimitSwitch{ShooterConstants::shooterLoadedLimitSwitchId};
 
-  CANSparkMax pullThrough{ShooterConstants::pullThroughCanId,
-                          CANSparkMax::MotorType::kBrushless};
-  CANSparkMax shooterPivot{ShooterConstants::shooterPivotCanId,
-                           CANSparkMax::MotorType::kBrushless};
+  CANSparkMax pullThrough{ShooterConstants::pullThroughCanId, CANSparkMax::MotorType::kBrushless};
+  CANSparkMax shooterPivot{ShooterConstants::shooterPivotCanId, CANSparkMax::MotorType::kBrushless};
 
   TalonFX LTelescopingArm{ShooterConstants::LTelescopingArmCanId};
   TalonFX RTelescopingArm{ShooterConstants::RTelescopingArmCanId};
 
-  CANSparkFlex intakeWheel{IntakeConstants::intakeWheelCanId,
-                           CANSparkFlex::MotorType::kBrushless};
+  CANSparkFlex intakeWheel{IntakeConstants::intakeWheelCanId, CANSparkFlex::MotorType::kBrushless};
   frc::DigitalInput intakeLimitSwitch{IntakeConstants::intakeLimitSwitchId};
 
-  CANSparkMax intakePivot{IntakeConstants::intakePivotCanId,
-                          CANSparkMax::MotorType::kBrushless};
-  frc::DigitalInput pivotLimitSwitchUpper{
-      IntakeConstants::pivotLimitSwitchUpperId};
-  frc::DigitalInput pivotLimitSwitchLower{
-      IntakeConstants::pivotLimitSwitchLowerId};
+  CANSparkMax intakePivot{IntakeConstants::intakePivotCanId, CANSparkMax::MotorType::kBrushless};
+  frc::DigitalInput pivotLimitSwitchUpper{IntakeConstants::pivotLimitSwitchUpperId};
+  frc::DigitalInput pivotLimitSwitchLower{IntakeConstants::pivotLimitSwitchLowerId};
 
   XboxController driverController{OIConstants::driverControllerPort};
   PS5Controller shooterController{ShooterConstants::shooterControllerPort};
