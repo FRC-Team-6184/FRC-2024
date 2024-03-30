@@ -286,7 +286,6 @@ void Robot::TeleopPeriodic() {
     shooter1.Set(0.25);
     pullThrough.Set(-0.25);
   }
-  SmartDashboard::PutBoolean("Shooter Intaking Note", shooterIntakingNote);
 
   // intakePivot.Set(shooterController.GetRightY() * 0.4);
 }
@@ -343,6 +342,7 @@ void Robot::automateNoteLoading() {
       intakePivot.Set(0);
       intakeWheel.Set(0);
       pullThrough.Set(0);
+      LTelescopingArm.Set(0);
       return;
     }
     intakePivot.Set(-0.1);
@@ -381,20 +381,28 @@ void Robot::initializeShuffleBoard() {
 }
 
 void Robot::populateShuffleBoard() {
-  SmartDashboard::PutNumber("Intake Progress", (int)noteAutoLoaderAutomation.state);
+  SmartDashboard::PutBoolean("Shooter Intaking Note", shooterIntakingNote);
+
   SmartDashboard::PutString("Intake State", Robot::noteAutoLoaderStateString());
-  SmartDashboard::PutBoolean("runnint auto 1", currentAuto.state == runningAuto1);
-  SmartDashboard::PutBoolean("running auto 2", currentAuto.state == runningAuto2);
-  SmartDashboard::PutBoolean("running auto 3", currentAuto.state == runningAuto3);
-  SmartDashboard::PutBoolean("running auto 4", currentAuto.state == runningAuto4);
-  SmartDashboard::PutBoolean("shooting note", currentAuto.state == shootingNote);
-  SmartDashboard::PutBoolean("intaking note autonomous", currentAuto.state == intakingNoteAutonomous);
+  SmartDashboard::PutBoolean("Running Auto 1", currentAuto.state == runningAuto1);
+  SmartDashboard::PutBoolean("Running Auto 2", currentAuto.state == runningAuto2);
+  SmartDashboard::PutBoolean("Running Auto 3", currentAuto.state == runningAuto3);
+  SmartDashboard::PutBoolean("Running Auto 4", currentAuto.state == runningAuto4);
+  SmartDashboard::PutBoolean("Shooting Note", currentAuto.state == shootingNote);
+  SmartDashboard::PutBoolean("Intaking Note Autonomous", currentAuto.state == intakingNoteAutonomous);
 
   SmartDashboard::PutBoolean("Pivot Switch Lower", pivotLimitSwitchLower.Get());
   SmartDashboard::PutBoolean("Pivot Switch Upper", pivotLimitSwitchUpper.Get());
   SmartDashboard::PutBoolean("shooter Loaded Limit Switch", shooterLoadedLimitSwitch.Get());
   SmartDashboard::PutBoolean("Intake Note Limit Switch", intakeLimitSwitch.Get());
   SmartDashboard::PutBoolean("shooter head", shooterLimitSwitch.Get());
+
+  SmartDashboard::PutNumber("Intake Pivot", intakePivot.Get());
+  SmartDashboard::PutNumber("Intake Wheel", intakeWheel.Get());
+  SmartDashboard::PutNumber("Pull Through", pullThrough.Get());
+  SmartDashboard::PutNumber("Left Telescoping Arm Position", LTelescopingArm.Get());
+
+  SmartDashboard::PutString("Left Telescoping Arm Position", LTelescopingArm.GetPosition().ToString());
 }
 
 /**
