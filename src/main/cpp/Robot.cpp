@@ -305,21 +305,17 @@ void Robot::automateNoteLoading() {
     intakeWheel.Set(1.0);
     intakePivot.Set(0.15);
   } else if (noteAutoLoaderAutomation.state == intakingNote) {
-    if (!intakeLimitSwitch.Get()) {
+    if (!intakeLimitSwitch.Get() || shooterController.GetPOV() == 0) {
       noteAutoLoaderAutomation.state = intakeRetracting;
       intakeWheel.Set(0);
       return;
     } else if (static_cast<double>(Timer::GetFPGATimestamp() - noteAutoLoaderAutomation.intakeDeployStartTime) > 10) {
       noteAutoLoaderAutomation.state == cancelling;
       return;
-    } else if (shooterController.GetPOV() == 0) {
-      noteAutoLoaderAutomation.state = intakeRetracting;
-      intakeWheel.Set(0);
-      return;
     }
     intakeWheel.Set(1.0);
     pullThrough.Set(1.0);
-
+    intakePivot.Set(0.0);
   } else if (noteAutoLoaderAutomation.state == intakeRetracting) {
     if (!pivotLimitSwitchUpper.Get()) {
       noteAutoLoaderAutomation.state = noteLoading;
