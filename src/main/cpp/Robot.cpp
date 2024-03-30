@@ -17,6 +17,7 @@
 
 using frc::Shuffleboard;
 using frc::ShuffleboardTab;
+using frc::SmartDashboard;
 using frc::Timer;
 
 void Robot::RobotInit() {
@@ -285,7 +286,7 @@ void Robot::TeleopPeriodic() {
     shooter1.Set(0.25);
     pullThrough.Set(-0.25);
   }
-  frc::SmartDashboard::PutBoolean("Shooter Intaking Note", shooterIntakingNote);
+  SmartDashboard::PutBoolean("Shooter Intaking Note", shooterIntakingNote);
 
   // intakePivot.Set(shooterController.GetRightY() * 0.4);
 }
@@ -370,30 +371,30 @@ void Robot::initializeShuffleBoard() {
   autoChooser.SetDefaultOption(position1, position1);
   autoChooser.AddOption(position2, position2);
   autoChooser.AddOption(position3, position3);
-  frc::SmartDashboard::PutData("Auto Modes", &autoChooser);
+  SmartDashboard::PutData("Auto Modes", &autoChooser);
 
   allianceChooser.SetDefaultOption(redAlliance, redAlliance);
   allianceChooser.AddOption(blueAlliance, blueAlliance);
-  frc::SmartDashboard::PutData("Alliance Selector", &allianceChooser);
+  SmartDashboard::PutData("Alliance Selector", &allianceChooser);
 
   ShuffleboardTab& tab = Shuffleboard::GetTab("Sensors");
 }
 
 void Robot::populateShuffleBoard() {
-  frc::SmartDashboard::PutNumber("Intake Progress", (int)noteAutoLoaderAutomation.state);
-  frc::SmartDashboard::PutString("Intake State", Robot::noteAutoLoaderStateString());
-  frc::SmartDashboard::PutBoolean("runnint auto 1", currentAuto.state == runningAuto1);
-  frc::SmartDashboard::PutBoolean("running auto 2", currentAuto.state == runningAuto2);
-  frc::SmartDashboard::PutBoolean("running auto 3", currentAuto.state == runningAuto3);
-  frc::SmartDashboard::PutBoolean("running auto 4", currentAuto.state == runningAuto4);
-  frc::SmartDashboard::PutBoolean("shooting note", currentAuto.state == shootingNote);
-  frc::SmartDashboard::PutBoolean("intaking note autonomous", currentAuto.state == intakingNoteAutonomous);
+  SmartDashboard::PutNumber("Intake Progress", (int)noteAutoLoaderAutomation.state);
+  SmartDashboard::PutString("Intake State", Robot::noteAutoLoaderStateString());
+  SmartDashboard::PutBoolean("runnint auto 1", currentAuto.state == runningAuto1);
+  SmartDashboard::PutBoolean("running auto 2", currentAuto.state == runningAuto2);
+  SmartDashboard::PutBoolean("running auto 3", currentAuto.state == runningAuto3);
+  SmartDashboard::PutBoolean("running auto 4", currentAuto.state == runningAuto4);
+  SmartDashboard::PutBoolean("shooting note", currentAuto.state == shootingNote);
+  SmartDashboard::PutBoolean("intaking note autonomous", currentAuto.state == intakingNoteAutonomous);
 
-  frc::SmartDashboard::PutBoolean("Pivot Switch Lower", pivotLimitSwitchLower.Get());
-  frc::SmartDashboard::PutBoolean("Pivot Switch Upper", pivotLimitSwitchUpper.Get());
-  frc::SmartDashboard::PutBoolean("shooter Loaded Limit Switch", shooterLoadedLimitSwitch.Get());
-  frc::SmartDashboard::PutBoolean("Intake Note Limit Switch", intakeLimitSwitch.Get());
-  frc::SmartDashboard::PutBoolean("shooter head", shooterLimitSwitch.Get());
+  SmartDashboard::PutBoolean("Pivot Switch Lower", pivotLimitSwitchLower.Get());
+  SmartDashboard::PutBoolean("Pivot Switch Upper", pivotLimitSwitchUpper.Get());
+  SmartDashboard::PutBoolean("shooter Loaded Limit Switch", shooterLoadedLimitSwitch.Get());
+  SmartDashboard::PutBoolean("Intake Note Limit Switch", intakeLimitSwitch.Get());
+  SmartDashboard::PutBoolean("shooter head", shooterLimitSwitch.Get());
 }
 
 /**
