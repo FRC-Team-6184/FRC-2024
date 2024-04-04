@@ -128,7 +128,7 @@ void Robot::AutonomousPeriodic() {
   }
 
   if (currentAuto.state == shootingNote) {
-    shooter1.Set(1);
+    shooter1.Set(-1);
     pullThrough.Set(1);
   } else {
     shooter1.Set(0);
