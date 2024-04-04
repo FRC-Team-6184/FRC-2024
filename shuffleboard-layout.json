@@ -11,19 +11,6 @@
         "vgap": 16.0,
         "titleType": 0,
         "tiles": {
-          "2,0": {
-            "size": [
-              2,
-              1
-            ],
-            "content": {
-              "_type": "ComboBox Chooser",
-              "_source0": "network_table:///SmartDashboard/Auto Modes",
-              "_title": "Auto Modes",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
           "0,0": {
             "size": [
               2,
@@ -398,7 +385,7 @@
             ],
             "content": {
               "_type": "Grid Layout",
-              "_title": "Grid Layout",
+              "_title": "Limit Switches",
               "_glyph": 149,
               "_showGlyph": false,
               "Layout/Number of columns": 3,
@@ -464,6 +451,28 @@
               "_title": "Intake Progress Bar",
               "_glyph": 148,
               "_showGlyph": false
+            }
+          },
+          "2,0": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "List Layout",
+              "_title": "List Layout",
+              "_glyph": 149,
+              "_showGlyph": false,
+              "Layout/Label position": "BOTTOM",
+              "_children": [
+                {
+                  "_type": "ComboBox Chooser",
+                  "_source0": "network_table:///SmartDashboard/Auto Modes",
+                  "_title": "Auto Modes",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                }
+              ]
             }
           }
         }
