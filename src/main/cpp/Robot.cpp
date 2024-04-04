@@ -156,18 +156,17 @@ void Robot::AutonomousPeriodic() {
     } else if (currentAuto.lastTickState == runningAuto4) {
       autonomousCommand4->Cancel();
     }
-
-    if (currentAuto.state == runningAuto1) {
-      autonomousCommand1->Schedule();
-    } else if (currentAuto.state == runningAuto2) {
-      autonomousCommand2->Schedule();
-    } else if (currentAuto.state == runningAuto3) {
-      autonomousCommand3->Schedule();
-    } else if (currentAuto.state == runningAuto4) {
-      autonomousCommand4->Schedule();
-    }
   }
 
+  if (currentAuto.state == runningAuto1) {
+    autonomousCommand1->Schedule();
+  } else if (currentAuto.state == runningAuto2) {
+    autonomousCommand2->Schedule();
+  } else if (currentAuto.state == runningAuto3) {
+    autonomousCommand3->Schedule();
+  } else if (currentAuto.state == runningAuto4) {
+    autonomousCommand4->Schedule();
+  }
   currentAuto.lastTickState = currentAuto.state;
 }
 
@@ -252,8 +251,11 @@ void Robot::TeleopPeriodic() {
   // } else {
   //   LTelescopingArm.Set(0);
   // }
-
-  shooterPivot.Set(shooterController.GetLeftY() * 0.3);
+  if (shooterController.GetLeftY() > 0 && !shooterLimitSwitch.Get()) {
+    shooterPivot.Set(0);
+  } else {
+    shooterPivot.Set(shooterController.GetLeftY() * 0.3);
+  }
 
   // if (shooterController.GetPOV() == 270) {
   //   intakeDirection = 1;
@@ -302,7 +304,7 @@ void Robot::automateNoteLoading() {
       intakePivot.Set(0);
       return;
     }
-    intakeWheel.Set(1.0);
+    intakeWheel.Set(1);
     intakePivot.Set(0.15);
   } else if (noteAutoLoaderAutomation.state == intakingNote) {
     if (!intakeLimitSwitch.Get() || shooterController.GetPOV() == 0) {
@@ -384,6 +386,7 @@ void Robot::populateShuffleBoard() {
   SmartDashboard::PutBoolean("Shooter Intaking Note", shooterIntakingNote);
 
   SmartDashboard::PutString("Intake State", Robot::noteAutoLoaderStateString());
+  SmartDashboard::PutNumber("Intake Progress Bar", (int)noteAutoLoaderAutomation.state / 6);
   SmartDashboard::PutBoolean("Running Auto 1", currentAuto.state == runningAuto1);
   SmartDashboard::PutBoolean("Running Auto 2", currentAuto.state == runningAuto2);
   SmartDashboard::PutBoolean("Running Auto 3", currentAuto.state == runningAuto3);
