@@ -85,14 +85,17 @@ void Robot::AutonomousInit() {
 
   if (autoChooser.GetSelected() == position1) {
     currentAuto.twoNote = false;
+    container.SetStartAngle(60 * alliance);
     autonomousCommand1 = container.SideTaxi1(alliance);
     autonomousCommand2 = container.SideTaxi1Part2(alliance);
   } else if (autoChooser.GetSelected() == position2) {
     currentAuto.twoNote = true;
+    container.SetStartAngle(0);
     autonomousCommand1 = container.MiddleTaxi(alliance);
     autonomousCommand2 = container.MiddleTaxiPart2(alliance);
   } else {
     currentAuto.twoNote = false;
+    container.SetStartAngle(-60 * alliance);
     autonomousCommand1 = container.SideTaxi2(alliance);
     autonomousCommand2 = container.SideTaxi2Part2(alliance);
   }
