@@ -108,10 +108,8 @@ void Robot::AutonomousPeriodic() {
   double timeDiff = static_cast<double>(Timer::GetFPGATimestamp() - autoTime);
 
   if (currentAuto.twoNote) {
-    if (timeDiff > 8) {
+    if (timeDiff > 5) {
       currentAuto.state = autoOff;
-    } else if (timeDiff > 3) {
-      currentAuto.state = runningAuto2;
     } else if (timeDiff > 2) {
       currentAuto.state = runningAuto1;
     } else {
@@ -218,8 +216,6 @@ void Robot::TeleopPeriodic() {
     automateNoteLoading();
   }
 
-  pullThrough.Set((shooterController.GetL2Axis() + 1) / 2);
-
   if (!intakeLimitSwitch.Get()) {
     ledColor = LedConstants::YELLOW;
   } else if (!shooterLimitSwitch.Get()) {
@@ -236,11 +232,11 @@ void Robot::TeleopPeriodic() {
     intakeWheel.Set(-1);
   }
 
-  if (shooterController.GetLeftY() > 0.1 && pivotLimitSwitchUpper.Get()) {
-    intakePivot.Set(shooterController.GetLeftY() * 0.2);
-  } else if (shooterController.GetLeftY() < -0.1 && pivotLimitSwitchLower.Get()) {
-    intakePivot.Set(shooterController.GetLeftY() * 0.2);
-  }
+  // if (shooterController.GetLeftY() > 0.1 && pivotLimitSwitchUpper.Get()) {
+  //   intakePivot.Set(shooterController.GetLeftY() * 0.2);
+  // } else if (shooterController.GetLeftY() < -0.1 && pivotLimitSwitchLower.Get()) {
+  //   intakePivot.Set(shooterController.GetLeftY() * 0.2);
+  // }
 
   // if (shooterDir != 0) {
   //   shooter1.Set(shooterDir * 0.5);

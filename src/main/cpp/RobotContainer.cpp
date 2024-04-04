@@ -66,7 +66,7 @@ RobotContainer::RobotContainer() {
           speedMultiplier = speedMode::TURTLE_SPEED;
         }
 
-        double dirAngle = atan2(driverController.GetLeftY(), driverController.GetLeftX()) - startAngle;
+        double dirAngle = atan2(driverController.GetLeftY(), driverController.GetLeftX()) + startAngle;
         double dirMag = sqrt(pow(driverController.GetLeftY(), 2) + pow(driverController.GetLeftX(), 2));
         double yDir = sin(dirAngle);
         double xDir = cos(dirAngle);
@@ -113,19 +113,19 @@ Command* RobotContainer::ReturnToSpeaker(int alliance) {
 Command* RobotContainer::MiddleTaxi(int alliance) {
   if (alliance == 1) {
     return new SequentialCommandGroup(
-        InstantCommand([this]() { driveSubsystem.Drive(0_mps, -1_mps, 0_rad_per_s, true, true); }, {}));
+        InstantCommand([this]() { driveSubsystem.Drive(0.5_mps, 0_mps, 0_rad_per_s, true, true); }, {}));
   } else {
     return new SequentialCommandGroup(
-        InstantCommand([this]() { driveSubsystem.Drive(0_mps, 1_mps, 0_rad_per_s, true, true); }, {}));
+        InstantCommand([this]() { driveSubsystem.Drive(0.5_mps, 0_mps, 0_rad_per_s, true, true); }, {}));
   }
 }
 Command* RobotContainer::MiddleTaxiPart2(int alliance) {
   return new SequentialCommandGroup(
-      InstantCommand([this]() { driveSubsystem.Drive(0.86_mps, 0_mps, 0_rad_per_s, true, true); }, {}));
+      InstantCommand([this]() { driveSubsystem.Drive(0_mps, 0_mps, 0_rad_per_s, true, true); }, {}));
 }
 Command* RobotContainer::SideTaxi2(int alliance) {
   return new SequentialCommandGroup(
-      InstantCommand([this]() { driveSubsystem.Drive(0_mps, -0.19_mps, 0_rad_per_s, true, true); }, {}));
+      InstantCommand([this]() { driveSubsystem.Drive(0.19_mps, 0_mps, 0_rad_per_s, true, true); }, {}));
 }
 Command* RobotContainer::SideTaxi2Part2(int alliance) {
   if (alliance == 1) {
