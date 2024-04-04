@@ -63,7 +63,7 @@
                   "_glyph": 148,
                   "_showGlyph": false,
                   "Range/Min": 0.0,
-                  "Range/Max": 7.0,
+                  "Range/Max": 1.0,
                   "Range/Center": 0.0,
                   "Visuals/Num tick marks": 8,
                   "Visuals/Show text": false,
@@ -451,6 +451,19 @@
                   "Colors/Color when false": "#8B0000FF"
                 }
               }
+            }
+          },
+          "2,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Intake Progress Bar",
+              "_title": "Intake Progress Bar",
+              "_glyph": 148,
+              "_showGlyph": false
             }
           }
         }

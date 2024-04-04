@@ -66,8 +66,8 @@ RobotContainer::RobotContainer() {
           speedMultiplier = speedMode::TURTLE_SPEED;
         }
 
-        double dirAngle = atan(driverController.GetLeftY() / driverController.GetLeftX()) - startAngle;
-        double dirMag = sqrt(pow(driverController.GetLeftY(), 2) + pow(driverController.GetLeftY(), 2));
+        double dirAngle = atan2(driverController.GetLeftY(), driverController.GetLeftX()) - startAngle;
+        double dirMag = sqrt(pow(driverController.GetLeftY(), 2) + pow(driverController.GetLeftX(), 2));
         double yDir = sin(dirAngle);
         double xDir = cos(dirAngle);
 
@@ -125,7 +125,7 @@ Command* RobotContainer::MiddleTaxiPart2(int alliance) {
 }
 Command* RobotContainer::SideTaxi2(int alliance) {
   return new SequentialCommandGroup(
-      InstantCommand([this]() { driveSubsystem.Drive(0.19_mps, 0_mps, 0_rad_per_s, true, true); }, {}));
+      InstantCommand([this]() { driveSubsystem.Drive(0_mps, -0.19_mps, 0_rad_per_s, true, true); }, {}));
 }
 Command* RobotContainer::SideTaxi2Part2(int alliance) {
   if (alliance == 1) {

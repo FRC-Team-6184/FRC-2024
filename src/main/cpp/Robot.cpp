@@ -177,6 +177,22 @@ void Robot::TeleopInit() {
     autonomousCommand4->Cancel();
   }
 
+  int alliance;
+
+  if (allianceChooser.GetSelected() == "Red Alliance") {
+    alliance = 1;
+  } else {
+    alliance = -1;
+  }
+
+  if (autoChooser.GetSelected() == position1) {
+    container.SetStartAngle(std::numbers::pi / 3 * alliance);
+  } else if (autoChooser.GetSelected() == position2) {
+    container.SetStartAngle(0);
+  } else {
+    container.SetStartAngle(-std::numbers::pi / 3 * alliance);
+  }
+
   shooter1.Set(0);
   shooterDir = 0;
   shooterIntakingNote = false;
@@ -201,6 +217,8 @@ void Robot::TeleopPeriodic() {
   if (noteAutoLoaderAutomation.state != off) {
     automateNoteLoading();
   }
+
+  pullThrough.Set((shooterController.GetL2Axis() + 1) / 2);
 
   if (!intakeLimitSwitch.Get()) {
     ledColor = LedConstants::YELLOW;
