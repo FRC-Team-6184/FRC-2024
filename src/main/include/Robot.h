@@ -66,6 +66,7 @@ class Robot : public frc::TimedRobot {
   bool autonomousRun = false;
   units::second_t autoTime;
   int shooterDir;
+  bool intakPivotOverride;
 
   enum autoStates {
     autoOff,

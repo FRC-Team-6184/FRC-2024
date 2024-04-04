@@ -89,10 +89,8 @@ void Robot::AutonomousInit() {
     autonomousCommand2 = container.SideTaxi1Part2(alliance);
   } else if (autoChooser.GetSelected() == position2) {
     currentAuto.twoNote = true;
-    autonomousCommand1 = container.GoToNote(alliance);
-    autonomousCommand2 = container.ReturnToSpeaker(alliance);
-    autonomousCommand3 = container.MiddleTaxi(alliance);
-    autonomousCommand4 = container.MiddleTaxiPart2(alliance);
+    autonomousCommand1 = container.MiddleTaxi(alliance);
+    autonomousCommand2 = container.MiddleTaxiPart2(alliance);
   } else {
     currentAuto.twoNote = false;
     autonomousCommand1 = container.SideTaxi2(alliance);
@@ -107,21 +105,11 @@ void Robot::AutonomousPeriodic() {
   double timeDiff = static_cast<double>(Timer::GetFPGATimestamp() - autoTime);
 
   if (currentAuto.twoNote) {
-    if (timeDiff > 15) {
+    if (timeDiff > 8) {
       currentAuto.state = autoOff;
-    }
-    if (timeDiff > 10) {
-      currentAuto.state = runningAuto4;
-    }
-    if (timeDiff > 9) {
-      currentAuto.state = runningAuto3;
-    } else if (timeDiff > 8) {
-      currentAuto.state = shootingNote;
-    } else if (timeDiff > 7) {
+    } else if (timeDiff > 3) {
       currentAuto.state = runningAuto2;
     } else if (timeDiff > 2) {
-      currentAuto.state = intakingNoteAutonomous;
-    } else if (timeDiff > 1) {
       currentAuto.state = runningAuto1;
     } else {
       currentAuto.state = shootingNote;
@@ -189,13 +177,17 @@ void Robot::TeleopInit() {
   shooter1.Set(0);
   shooterDir = 0;
   shooterIntakingNote = false;
+  intakPivotOverride = false;
 }
 
 /**
  * This function is called periodically during operator control.
  */
 void Robot::TeleopPeriodic() {
-  if (shooterController.GetPOV() == 0 && noteAutoLoaderAutomation.state == off) {
+  intakePivot.Set(0);
+  intakeWheel.Set(0);
+
+  if (shooterController.GetPOV() == 180 && noteAutoLoaderAutomation.state == off) {
     noteAutoLoaderAutomation.state = intakeDeploying;
   }
 
@@ -219,18 +211,14 @@ void Robot::TeleopPeriodic() {
   }
   led.SetData(ledBuffer);
 
-  if (shooterController.GetCrossButtonPressed()) {
-    shooterDir = 1;
-  }
-  if (shooterController.GetTriangleButtonPressed()) {
-    shooterDir = -1;
-  }
-  if (shooterController.GetCircleButtonPressed()) {
-    shooterDir = 0;
+  if (shooterController.GetTriangleButton()) {
+    intakeWheel.Set(-1);
   }
 
-  if (!shooterLoadedLimitSwitch.Get() && shooterDir != 0) {
-    shooterDir = 0;
+  if (shooterController.GetLeftY() > 0.1 && pivotLimitSwitchUpper.Get()) {
+    intakePivot.Set(shooterController.GetLeftY() * 0.2);
+  } else if (shooterController.GetLeftY() < -0.1 && pivotLimitSwitchLower.Get()) {
+    intakePivot.Set(shooterController.GetLeftY() * 0.2);
   }
 
   // if (shooterDir != 0) {
@@ -279,7 +267,7 @@ void Robot::TeleopPeriodic() {
   // intakeWheel.Set(intakeDirection * 0.5);
   // pullThrough.Set(pullThroughDirection);
 
-  if (shooterController.GetSquareButton()) {
+  if (shooterController.GetPOV() == 0) {
     shooterIntakingNote = true;
   }
   if (shooterIntakingNote && !shooterLoadedLimitSwitch.Get()) {
@@ -307,7 +295,7 @@ void Robot::automateNoteLoading() {
     intakeWheel.Set(1);
     intakePivot.Set(0.15);
   } else if (noteAutoLoaderAutomation.state == intakingNote) {
-    if (!intakeLimitSwitch.Get() || shooterController.GetPOV() == 0) {
+    if (!intakeLimitSwitch.Get() || shooterController.GetPOV() == 270) {
       noteAutoLoaderAutomation.state = intakeRetracting;
       intakeWheel.Set(0);
       return;
