@@ -91,7 +91,7 @@ void RobotContainer::ConfigureButtonBindings() {
 
 Command* RobotContainer::SideTaxi1(int alliance) {
   return new SequentialCommandGroup(
-      InstantCommand([this]() { driveSubsystem.Drive(0_mps, 0_mps, 0_rad_per_s, true, true); }, {}));
+      InstantCommand([this]() { driveSubsystem.Drive(0.25_mps, 0_mps, 0_rad_per_s, true, true); }, {}));
 }
 Command* RobotContainer::SideTaxi1Part2(int alliance) {
   if (alliance == 1) {
