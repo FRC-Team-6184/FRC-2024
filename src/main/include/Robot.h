@@ -67,6 +67,7 @@ class Robot : public frc::TimedRobot {
   units::second_t autoTime;
   int shooterDir;
   bool intakPivotOverride;
+  units::second_t shooterIntakeTime;
 
   enum autoStates {
     autoOff,
@@ -118,9 +119,9 @@ class Robot : public frc::TimedRobot {
   RobotContainer container;
 
   frc::SendableChooser<std::string> autoChooser;
-  const std::string position1 = "Position 1";
-  const std::string position2 = "Position 2";
-  const std::string position3 = "Position 3";
+  const std::string position1 = "Position 1 (Source Side)";
+  const std::string position2 = "Position 2 (Middle; facing forward)";
+  const std::string position3 = "Position 3 (Amp Side)";
   std::string selectedAuto;
 
   frc::SendableChooser<std::string> allianceChooser;

@@ -392,19 +392,10 @@
               "Layout/Number of rows": 3,
               "Layout/Label position": "BOTTOM",
               "_children": {
-                "0,1": {
+                "1,1": {
                   "_type": "Boolean Box",
-                  "_source0": "network_table:///SmartDashboard/Pivot Switch Lower",
-                  "_title": "Pivot Switch Lower",
-                  "_glyph": 148,
-                  "_showGlyph": false,
-                  "Colors/Color when true": "#7CFC00FF",
-                  "Colors/Color when false": "#8B0000FF"
-                },
-                "0,0": {
-                  "_type": "Boolean Box",
-                  "_source0": "network_table:///SmartDashboard/Pivot Switch Upper",
-                  "_title": "Pivot Switch Upper",
+                  "_source0": "network_table:///SmartDashboard/Shooter Head - 5",
+                  "_title": "Shooter Head - 5",
                   "_glyph": 148,
                   "_showGlyph": false,
                   "Colors/Color when true": "#7CFC00FF",
@@ -412,17 +403,8 @@
                 },
                 "1,0": {
                   "_type": "Boolean Box",
-                  "_source0": "network_table:///SmartDashboard/Intake Note Limit Switch",
-                  "_title": "Intake Note Limit Switch",
-                  "_glyph": 148,
-                  "_showGlyph": false,
-                  "Colors/Color when true": "#7CFC00FF",
-                  "Colors/Color when false": "#8B0000FF"
-                },
-                "1,1": {
-                  "_type": "Boolean Box",
-                  "_source0": "network_table:///SmartDashboard/Shooter Head",
-                  "_title": "Shooter Head",
+                  "_source0": "network_table:///SmartDashboard/Intake Note Limit Switch - 7",
+                  "_title": "Intake Note Limit Switch - 7",
                   "_glyph": 148,
                   "_showGlyph": false,
                   "Colors/Color when true": "#7CFC00FF",
@@ -430,8 +412,26 @@
                 },
                 "2,0": {
                   "_type": "Boolean Box",
-                  "_source0": "network_table:///SmartDashboard/Shooter Loaded Limit Switch",
-                  "_title": "Shooter Loaded Limit Switch",
+                  "_source0": "network_table:///SmartDashboard/Shooter Loaded Limit Switch - 4",
+                  "_title": "Shooter Loaded Limit Switch - 4",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                "0,0": {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///SmartDashboard/Pivot Switch Upper - 3",
+                  "_title": "Pivot Switch Upper - 3",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                "0,1": {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///SmartDashboard/Pivot Switch Lower - 6",
+                  "_title": "Pivot Switch Lower - 6",
                   "_glyph": 148,
                   "_showGlyph": false,
                   "Colors/Color when true": "#7CFC00FF",

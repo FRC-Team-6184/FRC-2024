@@ -38,10 +38,8 @@ constexpr double magnitudeSlewRate = 1.8;   // percent per second (1 = 100%)
 constexpr double rotationalSlewRate = 2.0;  // percent per second (1 = 100%)
 
 // Chassis configuration
-constexpr units::meter_t trackWidth =
-    0.635_m;  // Distance between centers of right and left wheels on robot
-constexpr units::meter_t wheelBase =
-    0.635_m;  // Distance between centers of front and back wheels on robot
+constexpr units::meter_t trackWidth = 0.635_m;  // Distance between centers of right and left wheels on robot
+constexpr units::meter_t wheelBase = 0.635_m;   // Distance between centers of front and back wheels on robot
 
 // Angular offsets of the modules relative to the chassis in radians
 constexpr double frontLeftChassisAngularOffset = -std::numbers::pi / 2;
@@ -49,7 +47,7 @@ constexpr double frontRightChassisAngularOffset = 0;
 constexpr double rearLeftChassisAngularOffset = std::numbers::pi;
 constexpr double rearRightChassisAngularOffset = std::numbers::pi / 2;
 
-// SPARK MAX CAN IDs
+// SPARK MAX CAN IDs/
 constexpr int frontLeftTurningCanId = 5;
 constexpr int frontLeftDrivingCanId = 6;
 constexpr int rearLeftTurningCanId = 7;
@@ -115,33 +113,25 @@ constexpr bool turningEncoderInverted = true;
 constexpr int drivingMotorPinionTeeth = 14;
 
 // Calculations required for driving motor conversion factors and feed forward
-constexpr double drivingMotorFreeSpeedRps =
-    5676.0 / 60;  // NEO free speed is 5676 RPM
+constexpr double drivingMotorFreeSpeedRps = 5676.0 / 60;  // NEO free speed is 5676 RPM
 constexpr units::meter_t wheelDiameter = 0.0762_m;
 constexpr units::meter_t wheelCircumference = wheelDiameter * std::numbers::pi;
 // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15
 // teeth on the bevel pinion
-constexpr double drivingMotorReduction =
-    (45.0 * 22) / (drivingMotorPinionTeeth * 15);
+constexpr double drivingMotorReduction = (45.0 * 22) / (drivingMotorPinionTeeth * 15);
 constexpr double driveWheelFreeSpeedRps =
-    (drivingMotorFreeSpeedRps * wheelCircumference.value()) /
-    drivingMotorReduction;
+    (drivingMotorFreeSpeedRps * wheelCircumference.value()) / drivingMotorReduction;
 
 constexpr double drivingEncoderPositionFactor =
-    (wheelDiameter.value() * std::numbers::pi) /
-    drivingMotorReduction;  // meters
+    (wheelDiameter.value() * std::numbers::pi) / drivingMotorReduction;  // meters
 constexpr double kDrivingEncoderVelocityFactor =
-    ((wheelDiameter.value() * std::numbers::pi) / drivingMotorReduction) /
-    60.0;  // meters per second
+    ((wheelDiameter.value() * std::numbers::pi) / drivingMotorReduction) / 60.0;  // meters per second
 
-constexpr double turningEncoderPositionFactor =
-    (2 * std::numbers::pi);  // radians
-constexpr double turningEncoderVelocityFactor =
-    (2 * std::numbers::pi) / 60.0;  // radians per second
+constexpr double turningEncoderPositionFactor = (2 * std::numbers::pi);         // radians
+constexpr double turningEncoderVelocityFactor = (2 * std::numbers::pi) / 60.0;  // radians per second
 
 constexpr units::radian_t turningEncoderPositionPIDMinInput = 0_rad;
-constexpr units::radian_t turningEncoderPositionPIDMaxInput =
-    units::radian_t{turningEncoderPositionFactor};
+constexpr units::radian_t turningEncoderPositionPIDMaxInput = units::radian_t{turningEncoderPositionFactor};
 
 constexpr double drivingP = 0.04;
 constexpr double drivingI = 0;
@@ -157,10 +147,8 @@ constexpr double turningFF = 0;
 constexpr double turningMinOutput = -1;
 constexpr double turningMaxOutput = 1;
 
-constexpr rev::CANSparkMax::IdleMode drivingMotorIdleMode =
-    rev::CANSparkMax::IdleMode::kBrake;
-constexpr rev::CANSparkMax::IdleMode turningMotorIdleMode =
-    rev::CANSparkMax::IdleMode::kBrake;
+constexpr rev::CANSparkMax::IdleMode drivingMotorIdleMode = rev::CANSparkMax::IdleMode::kBrake;
+constexpr rev::CANSparkMax::IdleMode turningMotorIdleMode = rev::CANSparkMax::IdleMode::kBrake;
 
 constexpr units::ampere_t drivingMotorCurrentLimit = 40_A;
 constexpr units::ampere_t turningMotorCurrentLimit = 30_A;

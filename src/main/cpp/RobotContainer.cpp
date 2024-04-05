@@ -91,15 +91,15 @@ void RobotContainer::ConfigureButtonBindings() {
 
 Command* RobotContainer::SideTaxi1(int alliance) {
   return new SequentialCommandGroup(
-      InstantCommand([this]() { driveSubsystem.Drive(0.965_mps, 0_mps, 0_rad_per_s, true, true); }, {}));
+      InstantCommand([this]() { driveSubsystem.Drive(0.7_mps, 0_mps, 0_rad_per_s, true, true); }, {}));
 }
 Command* RobotContainer::SideTaxi1Part2(int alliance) {
   if (alliance == 1) {
     return new SequentialCommandGroup(
-        InstantCommand([this]() { driveSubsystem.Drive(0.4_mps, -0.693_mps, 0_rad_per_s, true, true); }, {}));
+        InstantCommand([this]() { driveSubsystem.Drive(0.25_mps, -0.433_mps, 0_rad_per_s, true, true); }, {}));
   } else {
     return new SequentialCommandGroup(
-        InstantCommand([this]() { driveSubsystem.Drive(0.4_mps, 0.693_mps, 0_rad_per_s, true, true); }, {}));
+        InstantCommand([this]() { driveSubsystem.Drive(0.25_mps, 0.433_mps, 0_rad_per_s, true, true); }, {}));
   }
 }
 Command* RobotContainer::GoToNote(int alliance) {
@@ -125,15 +125,15 @@ Command* RobotContainer::MiddleTaxiPart2(int alliance) {
 }
 Command* RobotContainer::SideTaxi2(int alliance) {
   return new SequentialCommandGroup(
-      InstantCommand([this]() { driveSubsystem.Drive(0.19_mps, 0_mps, 0_rad_per_s, true, true); }, {}));
+      InstantCommand([this]() { driveSubsystem.Drive(0.2_mps, 0_mps, 0_rad_per_s, true, true); }, {}));
 }
 Command* RobotContainer::SideTaxi2Part2(int alliance) {
   if (alliance == 1) {
     return new SequentialCommandGroup(
-        InstantCommand([this]() { driveSubsystem.Drive(0.432_mps, 0.748_mps, 0_rad_per_s, true, true); }, {}));
+        InstantCommand([this]() { driveSubsystem.Drive(0.25_mps, 0.433_mps, 0_rad_per_s, true, true); }, {}));
   } else {
     return new SequentialCommandGroup(
-        InstantCommand([this]() { driveSubsystem.Drive(0.432_mps, -0.748_mps, 0_rad_per_s, true, true); }, {}));
+        InstantCommand([this]() { driveSubsystem.Drive(0.25_mps, -0.433_mps, 0_rad_per_s, true, true); }, {}));
   }
 }
 

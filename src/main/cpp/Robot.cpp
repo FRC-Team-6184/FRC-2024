@@ -13,6 +13,7 @@
 #include <frc2/command/CommandScheduler.h>
 #include <wpi/fs.h>
 
+#include "Constants.h"
 #include "RobotContainer.h"
 
 using frc::Shuffleboard;
@@ -116,9 +117,9 @@ void Robot::AutonomousPeriodic() {
       currentAuto.state = shootingNote;
     }
   } else {
-    if (timeDiff > 11) {
+    if (timeDiff > 7.5) {
       currentAuto.state = autoOff;
-    } else if (timeDiff > 6) {
+    } else if (timeDiff > 5.5) {
       currentAuto.state = runningAuto2;
     } else if (timeDiff > 2) {
       currentAuto.state = runningAuto1;
@@ -284,12 +285,15 @@ void Robot::TeleopPeriodic() {
   // intakeWheel.Set(intakeDirection * 0.5);
   // pullThrough.Set(pullThroughDirection);
 
-  if (shooterController.GetPOV() == 0) {
+  if (shooterController.GetPOV() == 0 && !shooterIntakingNote) {
     shooterIntakingNote = true;
+    shooterIntakeTime = Timer::GetFPGATimestamp();
   }
-  if (shooterIntakingNote && !shooterLoadedLimitSwitch.Get()) {
+  if (shooterIntakingNote &&
+      (!shooterLoadedLimitSwitch.Get() || static_cast<double>(Timer::GetFPGATimestamp() - shooterIntakeTime) > 5)) {
     shooterIntakingNote = false;
-  } else if (shooterIntakingNote) {
+  }
+  if (shooterIntakingNote) {
     shooter1.Set(0.25);
     pullThrough.Set(-0.25);
   }
@@ -399,11 +403,17 @@ void Robot::populateShuffleBoard() {
   SmartDashboard::PutBoolean("Shooting Note", currentAuto.state == shootingNote);
   SmartDashboard::PutBoolean("Intaking Note Autonomous", currentAuto.state == intakingNoteAutonomous);
 
-  SmartDashboard::PutBoolean("Pivot Switch Lower", pivotLimitSwitchLower.Get());
-  SmartDashboard::PutBoolean("Pivot Switch Upper", pivotLimitSwitchUpper.Get());
-  SmartDashboard::PutBoolean("Shooter Loaded Limit Switch", shooterLoadedLimitSwitch.Get());
-  SmartDashboard::PutBoolean("Intake Note Limit Switch", intakeLimitSwitch.Get());
-  SmartDashboard::PutBoolean("Shooter Head", shooterLimitSwitch.Get());
+  SmartDashboard::PutBoolean("Pivot Switch Lower - " + std::to_string(IntakeConstants::pivotLimitSwitchLowerId),
+                             pivotLimitSwitchLower.Get());
+  SmartDashboard::PutBoolean("Pivot Switch Upper - " + std::to_string(IntakeConstants::pivotLimitSwitchUpperId),
+                             pivotLimitSwitchUpper.Get());
+  SmartDashboard::PutBoolean(
+      "Shooter Loaded Limit Switch - " + std::to_string(ShooterConstants::shooterLoadedLimitSwitchId),
+      shooterLoadedLimitSwitch.Get());
+  SmartDashboard::PutBoolean("Intake Note Limit Switch - " + std::to_string(IntakeConstants::intakeLimitSwitchId),
+                             intakeLimitSwitch.Get());
+  SmartDashboard::PutBoolean("Shooter Head - " + std::to_string(ShooterConstants::shooterLimitSwitchId),
+                             shooterLimitSwitch.Get());
 
   SmartDashboard::PutNumber("Intake Pivot", intakePivot.Get());
   SmartDashboard::PutNumber("Intake Wheel", intakeWheel.Get());
