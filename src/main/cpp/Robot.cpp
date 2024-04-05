@@ -61,10 +61,7 @@ void Robot::RobotPeriodic() {
  * can use it to reset any subsystem information you want to clear when the
  * robot is disabled.
  */
-void Robot::DisabledInit() {
-  LTelescopingArm.SetNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Coast);
-  RTelescopingArm.SetNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Coast);
-}
+void Robot::DisabledInit() {}
 
 void Robot::DisabledPeriodic() {}
 
@@ -109,7 +106,7 @@ void Robot::AutonomousPeriodic() {
   double timeDiff = static_cast<double>(Timer::GetFPGATimestamp() - autoTime);
 
   if (currentAuto.twoNote) {
-    if (timeDiff > 5) {
+    if (timeDiff > 8) {
       currentAuto.state = autoOff;
     } else if (timeDiff > 2) {
       currentAuto.state = runningAuto1;
@@ -117,9 +114,9 @@ void Robot::AutonomousPeriodic() {
       currentAuto.state = shootingNote;
     }
   } else {
-    if (timeDiff > 7.5) {
+    if (timeDiff > 6.5) {
       currentAuto.state = autoOff;
-    } else if (timeDiff > 5.5) {
+    } else if (timeDiff > 5) {
       currentAuto.state = runningAuto2;
     } else if (timeDiff > 2) {
       currentAuto.state = runningAuto1;
